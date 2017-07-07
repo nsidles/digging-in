@@ -151,7 +151,7 @@
 			$tempArray["uploader_group"] = '';
 			$tempArray["site"] = get_post( $di_asr_site_id )->post_title . ' (#' . $di_asr_site_id . ')';
 			$tempArray["assessment"] = get_post( $di_asr_assessment_id )->post_title . ' (#' . $di_asr_assessment_id . ')';
-			$tempArray["assessment_result"] = '<div class="button asr-result" assessment_result="' . $di_asr_id . '">View Result</div>';
+			$tempArray["assessment_result"] = '<div class="button asr-result asr-result-view" assessment_result="' . $di_asr_id . '">View Result</div>';
 			$tempArray["assessment_result_evaluation"] = '<div class="button asr-result-evaluate" assessment_result="' . $di_asr_id . '">Evaluate</div>';
 			return $tempArray;
 		}

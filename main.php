@@ -45,6 +45,6 @@
 	 */
 	new DI_Admin();
 	new DI_View();
-	new DI_Data();
+	// new DI_Data	();
 
 ?>

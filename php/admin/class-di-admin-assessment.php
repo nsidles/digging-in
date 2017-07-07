@@ -196,6 +196,7 @@ class DI_Admin_Assessment extends DI_Admin {
 								<h4>Add user response image uploader:</h4>
 								<input id="di-slide-media-input-question" type="text" style="width: 90%;" placeholder="Image response question" /><br />(leave blank for none)
 								<hr />
+								<h4>Display Existing Answers: <input id="di-as-review" type="checkbox"></h4>
 								<h4>Final Slide: <input id="di-as-final" type="checkbox"></h4>
 								<div class="button button-primary" name="di-as-add" id="di-as-add">Add Slide</div>
 								<div class="button button-primary" name="di-as-edit" id="di-as-edit">Edit Slide</div>

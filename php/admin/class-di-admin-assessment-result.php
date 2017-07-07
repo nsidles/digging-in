@@ -27,7 +27,7 @@ require_once( plugin_dir_path( dirname( __FILE__ ) ).'list-table/class-di-wp-lis
 class DI_Admin_Assessment_Result extends DI_Admin {
 
 	function add_actions() {
-		add_action( 'wp_ajax_add_assessment_result', array( $this, 'di_assessment_result_adder_callback' ) );
+		add_action( 'wp_ajax_digging_in_add_assessment_result_evaluation', array( $this, 'di_assessment_result_adder_callback' ) );
 		add_action( 'wp_ajax_get_assessment_result', array( $this, 'di_get_assessment_result_callback' ) );
 	}
 
@@ -47,6 +47,7 @@ class DI_Admin_Assessment_Result extends DI_Admin {
 		wp_localize_script( 'di_control_panel_assessment_result_updater_script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 
 		$di_assessments = get_posts( array( 'posts_per_page' => -1, 'order' => 'ASC', 'post_type' => 'di_assessment' ) );
+		wp_nonce_field( 'di_nonce_check','di-nonce-field' );
 		?>
 			<h1>Digging In Student Assessment Results</h1>
 			<p></p>
@@ -63,13 +64,12 @@ class DI_Admin_Assessment_Result extends DI_Admin {
 			echo 'Sorry, WordPress has rejected your submission - specifically, your nonce did not verify. Please reload the form page and try again. This message may occur if you took more than a day to complete your form, if you do not have the appropriate privileges to submit soil groups but nonetheless try, or if the Digging In coding team made an error.';
 		} else {
 			$di_assessment_result_post = array(
-					'post_title' => sanitize_text_field( $_POST['di_assessment_result_title'] ),
-					'post_status' => 'publish',
-					'post_type' => 'di_assessment_result'
+					'ID' => $_POST['di_assessment_result_id'],
+					'post_content' => $_POST['di_assessment_result_data']
 			);
-			$di_assessment_result_id = wp_insert_post( $di_assessment_result_post );
+			$di_assessment_result_id = wp_update_post( $di_assessment_result_post );
+			echo $_POST['di_assessment_result_id'];
 		}
-		echo $_POST['di_assessment_result_content'];
 		die();
 	}
 

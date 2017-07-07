@@ -53,7 +53,7 @@ function detectEditMode() {
 		jQuery.post( ajax_object.ajax_url, data, function( response ) {
 			assessment = response.data;
 			for( j in assessment ) {
-				var slideElement = createSlideElement( assessment[j] );
+				var slideElement = createSlideElement( assessment[j], j );
 				slideElement.setAttribute( 'id', j );
 				addSlideElement( slideElement, document.getElementById( 'di-as-existing-list' ) );
 			}
@@ -194,7 +194,8 @@ function addRecordedMultipleChoice() {
  * @param {Object} slideObject - the slide JavaScript object to be parsed
  * @return {Object} element - the formatted slide element to be displayed
  */
-function createSlideElement( slideObject ) {
+function createSlideElement( slideObject, slideID ) {
+
 	var slide = createGeneralElement( 'div', 'di-as' );
 
 	var headerEdit = createGeneralElement( 'div', [ 'di-as-header', 'di-as-header-edit' ], 'Edit' );
@@ -205,7 +206,7 @@ function createSlideElement( slideObject ) {
 	var body = createGeneralElement( 'div', 'di-as-body' );
 	slide.appendChild( body );
 
-	var bodyTitle = createGeneralElement( 'div', [ 'di-as-element', 'di-as-title' ], slideObject.title );
+	var bodyTitle = createGeneralElement( 'div', [ 'di-as-element', 'di-as-title' ], slideObject.title + ' (#' + slideID + ')' );
 	body.appendChild( bodyTitle );
 
 	var bodyMain = createGeneralElement( 'div', [ 'di-as-element', 'di-as-body-main' ] );
@@ -334,11 +335,11 @@ function getSlideObject() {
 function addSlide() {
 
 	var slideObject = getSlideObject();
-	var slideElement = createSlideElement( slideObject );
 	var slideID = 1;
 	while( typeof assessment[slideID] !== 'undefined' ) {
 		slideID += 1;
 	}
+	var slideElement = createSlideElement( slideObject, slideID );
 	slideElement.setAttribute( 'id', slideID )
 	addSlideElement( slideElement, document.getElementById( 'di-as-existing-list' ) );
 
@@ -359,7 +360,7 @@ function addSlide() {
 function editSlide( slideID ) {
 
 	var slideObject = getSlideObject();
-	var slideElement = createSlideElement( slideObject );
+	var slideElement = createSlideElement( slideObject, slideID );
 	slideElement.setAttribute( 'id', slideID );
 	jQuery( '#' + slideID ).replaceWith( slideElement );
 
