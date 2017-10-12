@@ -32,7 +32,7 @@
 	  }
 
 	  function no_items() {
-	    _e( 'No assessments found.' );
+	    _e( 'No assessment results found.' );
 	  }
 
 	  function column_default( $item, $column_name ) {
@@ -65,17 +65,25 @@
 
 		function get_columns(){
 			$columns = array(
+				'cb'        => '<input type="checkbox" />',
 			  'id' => __( 'ID', 'mylisttable' ),
 				'date' => __( 'Date', 'mylisttable' ),
 				'uploader' => __( 'Uploader (#ID)' , 'mylisttable' ),
 				'uploader_group' => __( 'Uploader Group	 (#ID)' , 'mylisttable' ),
 			  'site' => __( 'Site #ID', 'mylisttable' ),
 				'assessment' => __( 'Assessment #ID', 'mylisttable' ),
-			  'assessment_result' => __( 'View', 'mylisttable' ),
-				'assessment_result_evaluation' => __( 'Evaluate', 'mylisttable' )
+			  'assessment_result' => __( 'View', 'mylisttable' )
 			);
+			if( current_user_can( 'manage_options' ) )
+				$columns['assessment_result_evaluation'] = __( 'Evaluate', 'mylisttable' );
 			return $columns;
 		}
+
+		function column_cb( $item ) {
+        return sprintf(
+            '<input type="checkbox" name="book[]" value="%s" />', $item['id']
+        );
+    }
 
 		function usort_reorder( $a, $b ) {
 		  // If no sort, default to title
@@ -95,11 +103,12 @@
 		  return sprintf('%1$s %2$s', $item['id'], $this->row_actions($actions) );
 		}
 
-		function column_cb($item) {
-		  return sprintf(
-		    '<input type="checkbox" name="book[]" value="%s" />', $item['id']
-		  );
-		}
+		// function get_bulk_actions() {
+		// 		$actions = array(
+		// 			'delete'    => 'Delete'
+		// 		);
+		// 		return $actions;
+		// }
 
 		function prepare_items() {
 		  $columns  = $this->get_columns();
@@ -126,12 +135,44 @@
 		function di_get_assessment_results() {
 			global $wpdb;
 			$response = array();
-			$di_sites = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+			if( current_user_can( 'manage_options' ) ) {
+				$di_sites = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+			} else {
+				$di_sites = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+				$temp_di_sites = array();
+				$user_id = get_current_user_id();
+				foreach( $di_sites as $di_site ) {
+					$di_asr_group_id = get_post_meta( $di_site->ID, 'di_assessment_result_group', true );
+					$di_group_people = get_post_meta( $di_asr_group_id, 'di_group_people', true );
+					if( $di_group_people != '' ) {
+						foreach( $di_group_people as $di_group_person ) {
+							if( $user_id == $di_group_person ) {
+								$temp_di_sites[] = $di_site;
+							}
+						}
+					}
+				}
+				$di_sites = $temp_di_sites;
+			}
 			foreach ( $di_sites as $di_site ) {
 				$tempArray = $this->di_get_site_metadata( $di_site->ID );
-				array_push( $response, $tempArray );
+				if( $tempArray != null )
+					array_push( $response, $tempArray );
 			}
 			return $response;
+		}
+
+		function filter_posts( $posts ) {
+			if( isset( $_GET['title'] ) && $_GET['title'] != '' ) {
+				$title = $_GET['title'];
+				foreach( $posts as $post ) {
+					if( $post->post_title ) {
+
+					}
+				}
+			}
+
+			return $posts;
 		}
 
 		function di_get_site_metadata( $di_asr_id ) {
@@ -144,15 +185,25 @@
 			$di_asr_site_id = get_post_meta( $di_asr->ID, 'di_assessment_result_site', true );
 			$di_site_meta_content = get_post_meta( $di_asr->ID, 'di_assessment_', true );
 			$di_asr_author = get_user_by( 'id', $di_asr->post_author );
+			$di_asr_group_id = get_post_meta( $di_asr->ID, 'di_assessment_result_group', true );
+			$di_asr_group = get_post( $di_asr_group_id );
 			$tempArray = array();
 			$tempArray["id"] = $di_asr->ID;
 			$tempArray["date"] = $di_asr->post_date;
 			$tempArray["uploader"] = $di_asr_author->first_name . ' ' . $di_asr_author->last_name . ' (' . $di_asr_author->ID . ')';
-			$tempArray["uploader_group"] = '';
+			@$tempArray["uploader_group"] = $di_asr_group->post_title . ' (#' . $di_asr_group_id . ')';
 			$tempArray["site"] = get_post( $di_asr_site_id )->post_title . ' (#' . $di_asr_site_id . ')';
 			$tempArray["assessment"] = get_post( $di_asr_assessment_id )->post_title . ' (#' . $di_asr_assessment_id . ')';
 			$tempArray["assessment_result"] = '<div class="button asr-result asr-result-view" assessment_result="' . $di_asr_id . '">View Result</div>';
-			$tempArray["assessment_result_evaluation"] = '<div class="button asr-result-evaluate" assessment_result="' . $di_asr_id . '">Evaluate</div>';
+			if( current_user_can( 'manage_options' ) )
+				$tempArray["assessment_result_evaluation"] = '<div class="button asr-result-evaluate" assessment_result="' . $di_asr_id . '">Evaluate</div>';
+
+			if( isset( $_GET['di_group'] ) && $_GET['di_group'] != $di_asr_group_id )
+				return;
+			if( isset( $_GET['di_assessment'] ) && $_GET['di_assessment'] != $di_asr_assessment_id )
+				return;
+			if( isset( $_GET['di_site'] ) && $_GET['di_site'] != $di_asr_site_id )
+				return;
 			return $tempArray;
 		}
 

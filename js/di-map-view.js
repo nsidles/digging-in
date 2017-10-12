@@ -2,10 +2,10 @@
 
 // Current assessment object and student answers object.
 var studentAnswers = new Object();
+var studentAnswersID = '';
 var assessment = new Object();
 
 jQuery( document ).ready(function( $ ) {
-
 	// Creating variables used in creating the Google Maps element used to retrieve soil sites
 	var requestedLatlng, mapOptions, map, marker, data;
 
@@ -92,7 +92,7 @@ function DIMap( map ) {
 			jQuery( '#di-site .main-left' ).html( '' );
 			jQuery( '#di-site .main-right' ).html( '' );
 
-			jQuery( '#di-site .main-left' ).append( '<h2>' + response.title + ' (# ' + response.ID + ')</h2>' );
+			jQuery( '#di-site .main-left' ).append( '<h2>' + response.title );
 			jQuery( '#di-site .main-left' ).append( '<p2>' + response.content + '</p><hr />' );
 			for( di_medium in response['di_media'] ) {
 				jQuery( '#di-site .main-right' ).append( '<h2>' + response['di_media'][di_medium]['title'] + '</h2><p>' + response['di_media'][di_medium]['media'] + '</p>' + response['di_media'][di_medium]['description'] + '<p><hr /></p>' );
@@ -126,42 +126,56 @@ function DIMap( map ) {
 		jQuery('#di-assessment-prev').off();
 		data = {
 			'action': 'digging_in_get_assessment',
-			'di_assessment_id': assessmentID
+			'di_assessment_id': assessmentID,
+			'di_user_id': jQuery( '#di-user-id' ).html()
 		};
 		jQuery.post( ajax_object.ajax_url, data, function( response ) {
 
 				assessment = response.data;
 
-				var header = createGeneralElement( 'div', '', response.title );
-				jQuery( '#di-assessment-header' ).html( '' );
-				jQuery( '#di-assessment-header' ).append( header );
+				if( response.group != '' ) {
+					var header = createGeneralElement( 'div', '', response.title );
+					jQuery( '#di-assessment-header' ).html( '' );
+					jQuery( '#di-assessment-header' ).append( header );
 
-				if( typeof studentAnswers[assessmentID] === 'undefined' ) {
-					studentAnswers[assessmentID] = new Object();
-					for( i in assessment ) {
-						if( typeof studentAnswers[assessmentID][i] === 'undefined' ) {
-							studentAnswers[assessmentID][i] = new Object();
-							studentAnswers[assessmentID][i].recordedMultipleChoice = new Object();
-							studentAnswers[assessmentID][i].text = new Object();
-							studentAnswers[assessmentID][i].image = new Object();
-							studentAnswers[assessmentID][i].recordedMultipleChoice.question = assessment[i].recordedMultipleChoiceQuestion;
-							studentAnswers[assessmentID][i].recordedMultipleChoice.answer = '';
-							studentAnswers[assessmentID][i].text.question = assessment[i].textBoxQuestion;
-							studentAnswers[assessmentID][i].text.answer = '';
-							studentAnswers[assessmentID][i].image.question = assessment[i].imageBoxQuestion;
-							studentAnswers[assessmentID][i].image.answer = '';
-							studentAnswers[assessmentID][i].title = assessment[i].title;
+					if( response.answers != '' || typeof response.answers !== 'undefined' ) {
+						studentAnswers[assessmentID] = JSON.parse( response.answers );
+						studentAnswersID = response.answers_id;
+					} else {
+						studentAnswers = new Object();
+						studentAnswersID = '';
+					}
+					
+					if( typeof studentAnswers[assessmentID] === 'undefined' || studentAnswers[assessmentID] === null ) {
+						alert("hello");
+						studentAnswers[assessmentID] = new Object();
+						for( i in assessment ) {
+							if( typeof studentAnswers[assessmentID][i] === 'undefined' ) {
+								studentAnswers[assessmentID][i] = new Object();
+								studentAnswers[assessmentID][i].recordedMultipleChoice = new Object();
+								studentAnswers[assessmentID][i].text = new Object();
+								studentAnswers[assessmentID][i].image = new Object();
+								studentAnswers[assessmentID][i].recordedMultipleChoice.question = assessment[i].recordedMultipleChoiceQuestion;
+								studentAnswers[assessmentID][i].recordedMultipleChoice.answer = '';
+								studentAnswers[assessmentID][i].text.question = assessment[i].textBoxQuestion;
+								studentAnswers[assessmentID][i].text.answer = '';
+								studentAnswers[assessmentID][i].image.question = assessment[i].imageBoxQuestion;
+								studentAnswers[assessmentID][i].image.answer = '';
+								studentAnswers[assessmentID][i].title = assessment[i].title;
+							}
 						}
 					}
-				}
 
-				for( i in assessment ) {
-					objectInstance.displaySlide( i );
-					break;
-				}
+					for( i in assessment ) {
+						objectInstance.displaySlide( i );
+						break;
+					}
 
-				// Makes the assessment appear in front of all other elements.
-				jQuery( '#di-assessment-background' ).toggle();
+					// Makes the assessment appear in front of all other elements.
+					jQuery( '#di-assessment-background' ).toggle();
+				} else {
+					alert( "Sorry, you are not part of a Digging In Group." );
+				}
 
 		});
 	}
@@ -173,6 +187,7 @@ function DIMap( map ) {
 	 * @param {Number} slideID - ID of the slide to retrieve.
 	 */
 	this.displaySlide = function( slideID ) {
+
 		jQuery( '#di-assessment-slide-id' ).html( slideID );
 
 		var slideObject = assessment[slideID];
@@ -214,8 +229,12 @@ function DIMap( map ) {
 			bodyRecordedMultipleChoice.appendChild( question );
 			for( i in slideObject.recordedMultipleChoiceAnswers ) {
 				var answer = createGeneralElement( 'div', 'di-as-recorded-multiple-choice-answer', slideObject.recordedMultipleChoiceAnswers[i].text );
-				if( typeof studentAnswers[assessmentID] !== 'undefined' && typeof studentAnswers[assessmentID][slideID] !== 'undefined' && studentAnswers[assessmentID][slideID].recordedMultipleChoice.answer == slideObject.recordedMultipleChoiceAnswers[i].text ) {
-					answer.classList.add( 'di-as-recorded-multiple-choice-answer-chosen' );
+				if( typeof studentAnswers[assessmentID] !== 'undefined' && studentAnswers[assessmentID] !== null ) {
+					if( typeof studentAnswers[assessmentID][slideID] !== 'undefined' && studentAnswers[assessmentID][slideID] !== null ) {
+						if( studentAnswers[assessmentID][slideID].recordedMultipleChoice.answer == slideObject.recordedMultipleChoiceAnswers[i].text ) {
+							answer.classList.add( 'di-as-recorded-multiple-choice-answer-chosen' );
+						}
+					}
 				}
 				bodyRecordedMultipleChoice.appendChild( answer );
 			}
@@ -227,7 +246,7 @@ function DIMap( map ) {
 			var question = createGeneralElement( 'div', 'di-as-question', slideObject.textBoxQuestion );
 			var answer = createGeneralElement( 'textarea', 'di-as-answer' );
 			answer.setAttribute( 'id', 'di-as-text-answer' );
-			if( typeof studentAnswers[assessmentID] !== 'undefined' && typeof studentAnswers[assessmentID][slideID] !== 'undefined' ) {
+			if( typeof studentAnswers[assessmentID] !== 'undefined' && studentAnswers[assessmentID] !== null && typeof studentAnswers[assessmentID][slideID] !== 'undefined' && studentAnswers[assessmentID][slideID] !== null ) {
 				answer.innerHTML = studentAnswers[assessmentID][slideID].text.answer;
 			}
 
@@ -261,7 +280,7 @@ function DIMap( map ) {
 			canvas.setAttribute( 'height', '500' );
 			answerForm.appendChild( canvas );
 
-			if( typeof studentAnswers[assessmentID] !== 'undefined' && typeof studentAnswers[assessmentID][slideID] !== 'undefined' ) {
+			if( typeof studentAnswers[assessmentID] !== 'undefined' && studentAnswers[assessmentID] !== null && typeof studentAnswers[assessmentID][slideID] !== 'undefined' && studentAnswers[assessmentID][slideID] !== null ) {
 				canvas.setAttribute( 'src', studentAnswers[assessmentID][slideID].image.answer );
 				var ctx = canvas.getContext("2d");
 				var imageObj = new Image();
@@ -593,10 +612,12 @@ function DIMap( map ) {
 			objectInstance.displaySlide( slideID );
 		});
 		jQuery( '#di-assessment-reviewer' ).on( 'click', function (){
+			objectInstance.addStudentAnswers();
 			jQuery( '#di-review' ).toggle();
 			objectInstance.displayReviewSlide();
 		});
 		jQuery( '#di-assessment-body' ).on( 'click', '.di-as-button-submit', function () {
+			objectInstance.addStudentAnswers();
 			jQuery( '#di-review' ).toggle();
 			objectInstance.displayReviewSlide();
 		});
@@ -621,6 +642,7 @@ function DIMap( map ) {
 					'di_assessment_result_data': JSON.stringify( studentAnswers[assessmentID] ),
 					'di_assessment_result_site': jQuery( '#di-site-id' ).html(),
 					'di_assessment_result_assessment': jQuery( '#di-assessment-id' ).html(),
+					'di_assessment_result_id': studentAnswersID
 				};
 				jQuery.post( ajax_object.ajax_url, data, function( response ) {
 					alert( response );
@@ -630,7 +652,6 @@ function DIMap( map ) {
 					jQuery( '#di-assessment-body' ).html( '' );
 					jQuery( '#di-assessment-footer' ).html( '' );
 					jQuery( '#di-assessment-background' ).hide();
-					studentAnswers[assessmentID] = new Object();
 				});
 		});
 		jQuery( '#di-reviewer-footer' ).on( 'click', '#di-as-button-slide-link-first', function() {
@@ -655,7 +676,7 @@ function DIMap( map ) {
 		var currentSlideID = jQuery( '#di-assessment-slide-id' ).html();
 		var slideObject = assessment[currentSlideID];
 
-		if( slideObject.recordedMultipleChoiceQuestion != '' ) {
+		if( slideObject.recordedMultipleChoiceQuestion != '' && typeof studentAnswers[currentAssessmentID] !== 'undefined' && studentAnswers[currentAssessmentID] !== null && typeof studentAnswers[currentAssessmentID][currentSlideID] !== 'undefined' && studentAnswers[currentAssessmentID][currentSlideID] !== null ) {
 			studentAnswers[currentAssessmentID][currentSlideID].recordedMultipleChoice.answer = jQuery( '.di-as-recorded-multiple-choice-answer-chosen' ).html();
 			if( typeof studentAnswers[currentAssessmentID][currentSlideID].recordedMultipleChoice.answer === 'undefined' ) {
 				studentAnswers[currentAssessmentID][currentSlideID].recordedMultipleChoice.answer = '';
@@ -673,7 +694,7 @@ function DIMap( map ) {
 			var fd = new FormData(document.forms[0]);
 			fd.append("file", blob, "test.jpg");
 			jQuery.ajax( {
-				url: "../../wp-content/plugins/digging-in/php/ajax_php_file.php", 	// Url to which the request is send
+				url: "../wp-content/plugins/digging-in/php/ajax_php_file.php", 	// Url to which the request is send
 				type: "POST",             																			// Type of request to be send, called as method
 				data: fd, 																											// Data sent to server, a set of key/value pairs (i.e. form fields and values)
 				contentType: false,       																			// The content type used when sending data to the server.

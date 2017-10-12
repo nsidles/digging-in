@@ -1,4 +1,4 @@
-// This file contains JavaScript code used to create and update student groups - associated groups of users who can have their assessments evaluated together. This function depends on jQuery UI being enabled.
+// This file contains JavaScript code used to create and update students and groups - associated groups of users who can have their assessments evaluated together. This function depends on jQuery UI being enabled.
 
 jQuery( document ).ready(function( $ ) {
 
@@ -27,8 +27,10 @@ jQuery( document ).ready(function( $ ) {
 	});
 
 	// Event handler for deleting a group.
-	jQuery( '.delete' ).click(function() {
-		deleteGroup();
+	jQuery( '.delete' ).click(function(e) {
+		if ( confirm( "I understand and confirm I wish to delete this group." ) == false ) {
+			e.preventDefault();
+		}
 	});
 
 });
@@ -53,14 +55,6 @@ function editGroupSubmit() {
 	jQuery.post( ajax_object.ajax_url, data, function( response ) {
 		location.reload();
 	});
-}
-
-/**
- * Function to delete a group. It depends on GET parameters being set by
- * class-di-wp-list-table-group, then reloads the page.
- */
-function deleteGroup() {
-	location.reload();
 }
 
 /**

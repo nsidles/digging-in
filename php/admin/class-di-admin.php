@@ -61,6 +61,9 @@ class DI_Admin {
 			add_action( 'init', array( $this, 'register_post_types' ) );
 			add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 			add_action( 'wp_ajax_options_updater', array( $this, 'di_options_updater_callback' ) );
+			add_action( 'wp_ajax_di_delete_all_media', array( $this, 'di_delete_all_media_callback' ) );
+			add_action( 'wp_ajax_di_delete_all_groups', array( $this, 'di_delete_all_groups_callback' ) );
+			add_action( 'wp_ajax_di_delete_all_results', array( $this, 'di_delete_all_results_callback' ) );
 	}
 
 	/**
@@ -115,11 +118,11 @@ class DI_Admin {
 	public function add_menu_pages() {
 			if ( !current_user_can( 'edit_pages' ) ) {
 			} else {
-				add_menu_page( 'Digging In', 'Digging In', 'edit_pages', 'di', array( $this, 'add_menu_page' ) );
-				add_submenu_page( 'di', 'Soil Sites', 'Soil Sites', 'edit_pages', 'di-sites', array( $this->di_admin_sites, 'add_menu_page' ) );
-				add_submenu_page( 'di', 'Soil Site Media', 'Soil Site Media', 'edit_pages', 'di-media', array( $this->di_admin_media, 'add_menu_page' ) );
-				add_submenu_page( 'di', 'Student Groups', 'Student Groups', 'edit_pages', 'di-groups', array( $this->di_admin_groups, 'add_menu_page' ) );
-				add_submenu_page( 'di', 'Assessments', 'Assessments', 'edit_pages', 'di-assessments', array( $this->di_admin_slides, 'add_menu_page' ) );
+				add_menu_page( 'Digging In', 'Digging In', 'manage_options', 'di', array( $this, 'add_menu_page' ) );
+				add_submenu_page( 'di', 'Soil Sites', 'Soil Sites', 'manage_options', 'di-sites', array( $this->di_admin_sites, 'add_menu_page' ) );
+				add_submenu_page( 'di', 'Soil Site Media', 'Soil Site Media', 'manage_options', 'di-media', array( $this->di_admin_media, 'add_menu_page' ) );
+				add_submenu_page( 'di', 'Students and Groups', 'Student and Groups', 'manage_options', 'di-groups', array( $this->di_admin_groups, 'add_menu_page' ) );
+				add_submenu_page( 'di', 'Assessments', 'Assessments', 'manage_options', 'di-assessments', array( $this->di_admin_slides, 'add_menu_page' ) );
 				add_submenu_page( 'di', 'Assessment Results', 'Assessment Results', 'edit_pages', 'di-assessment-results', array( $this->di_admin_results, 'add_menu_page' ) );
 			}
 	}
@@ -138,23 +141,41 @@ class DI_Admin {
 		wp_localize_script( 'di_control_panel_updater_script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 		?>
 			<h2>Digging In Settings</h2>
-			<table class="form-table">
-				<tr>
-					<th scope="row"><label for="di_app_google_key">Google Maps API Key</label></th>
-					<td>
-						<?php
-							echo '<input name="di-app-google-key" type="text" id="di-google-maps-api-key" value="' . get_option( 'di_google_maps_api_key' ) . '" class="regular-text ltr" />';
-						?>
-					</td>
-				</tr>
-			</table>
+			<h3>Google Maps</h3>
+			<h4>Google Maps API Key</h3>
+			<p>This setting sets the API key that allows you to use Google maps to display soil sites.</p>
+			<?php echo '<input name="di-app-google-key" type="text" id="di-google-maps-api-key" value="' . get_option( 'di_google_maps_api_key' ) . '" class="regular-text ltr" />'; ?>
+			<h4>Google Maps Bounding Area</h4>
+			<p>Upper latitude: <?php echo '<input name="di-app-upper-lat" type="text" id="di-google-maps-upper-lat" value="' . get_option( 'di_google_maps_upper_lat' ) . '" />'; ?></p>
+			<p>Left longitude: <?php echo '<input name="di-app-left-lon" type="text" id="di-google-maps-left-lon" value="' . get_option( 'di_google_maps_left_lon' ) . '" />'; ?></p>
+			<p>Lower latitude: <?php echo '<input name="di-app-lower-lat" type="text" id="di-google-maps-lower-lat" value="' . get_option( 'di_google_maps_lower_lat' ) . '" />'; ?></p>
+			<p>Right longitude: <?php echo '<input name="di-app-right-lon" type="text" id="di-google-maps-right-lon" value="' . get_option( 'di_google_maps_right_lon' ) . '" />'; ?></p>
+			<h4>Google Maps Layers</h4>
+			<p>Enable layers and buttons:</p>
+			<p>Layer 1 file: <?php echo '<input name="di-app-layer1-file" type="text" id="di-google-maps-layer1-file" value="' . get_option( 'di_google_maps_layer1_file' ) . '" />'; ?> Layer 1 label: <?php echo '<input name="di-app-layer1-label" type="text" id="di-google-maps-layer1-label" value="' . get_option( 'di_google_maps_layer1_label' ) . '" />'; ?></p>
+			<p>Layer 2 file: <?php echo '<input name="di-app-layer2-file" type="text" id="di-google-maps-layer2-file" value="' . get_option( 'di_google_maps_layer2_file' ) . '" />'; ?> Layer 2 label: <?php echo '<input name="di-app-layer2-label" type="text" id="di-google-maps-layer2-label" value="' . get_option( 'di_google_maps_layer2_label' ) . '" />'; ?></p>
+			<p>Layer 3 file: <?php echo '<input name="di-app-layer3-file" type="text" id="di-google-maps-layer3-file" value="' . get_option( 'di_google_maps_layer3_file' ) . '" />'; ?> Layer 3 label: <?php echo '<input name="di-app-layer3-label" type="text" id="di-google-maps-layer3-label" value="' . get_option( 'di_google_maps_layer3_label' ) . '" />'; ?></p>
+			<p>Layer 4 file: <?php echo '<input name="di-app-layer4-file" type="text" id="di-google-maps-layer4-file" value="' . get_option( 'di_google_maps_layer4_file' ) . '" />'; ?> Layer 4 label: <?php echo '<input name="di-app-layer4-label" type="text" id="di-google-maps-layer4-label" value="' . get_option( 'di_google_maps_layer4_label' ) . '" />'; ?></p>
+			<p>Layer 5 file: <?php echo '<input name="di-app-layer5-file" type="text" id="di-google-maps-layer5-file" value="' . get_option( 'di_google_maps_layer5_file' ) . '" />'; ?> Layer 5 label: <?php echo '<input name="di-app-layer5-label" type="text" id="di-google-maps-layer5-label" value="' . get_option( 'di_google_maps_layer5_label' ) . '" />'; ?></p>
 			<div class="button button-primary" id="di-options-submit">Submit</div>
+			<hr />
+			<h3>Delete All Student Media</h3>
+			<p>This button deletes all student-submitted media. Use it to remove all student-submitted media from this installation.</p>
+			<div class="button button-primary" id="di-delete-all-media">Delete All Media</div>
+			<hr />
+			<h3>Delete All Student Groups</h3>
+			<p>This button deletes all student groups. Use it to remove all student group data from this installation.</p>
+			<div class="button button-primary" id="di-delete-all-groups">Delete All Groups</div>
+			<hr />
+			<h3>Delete All Student Assessment Results</h3>
+			<p>This button deletes all student assessment results. Use it to remove all student assessment results from this installation</p>
+			<div class="button button-primary" id="di-delete-all-assessment-results">Delete All Assessment Results</div>
 		<?php
 	}
 
 	/**
 		 * This is the callback function for di-options-updater.js's
-		 * AJAX request, updating a Google Maps API key.
+		 * AJAX request, updating a Google Maps API key and other parameters.
 		 *
 		 * @access public
 		 * @return void
@@ -162,7 +183,81 @@ class DI_Admin {
 	public function di_options_updater_callback() {
 		if( current_user_can( 'edit_pages' ) ) {
 			update_option( 'di_google_maps_api_key', esc_attr( $_POST['di_google_maps_api_key'] ) );
-			echo 'Digging In options updated!';
+			update_option( 'di_google_maps_upper_lat', esc_attr( $_POST['di_google_maps_upper_lat'] ) );
+			update_option( 'di_google_maps_left_lon', esc_attr( $_POST['di_google_maps_left_lon'] ) );
+			update_option( 'di_google_maps_lower_lat', esc_attr( $_POST['di_google_maps_lower_lat'] ) );
+			update_option( 'di_google_maps_right_lon', esc_attr( $_POST['di_google_maps_right_lon'] ) );
+			update_option( 'di_google_maps_layer1_label', esc_attr( $_POST['di_google_maps_layer1_label'] ) );
+			update_option( 'di_google_maps_layer1_file', esc_attr( $_POST['di_google_maps_layer1_file'] ) );
+			update_option( 'di_google_maps_layer2_label', esc_attr( $_POST['di_google_maps_layer2_label'] ) );
+			update_option( 'di_google_maps_layer2_file', esc_attr( $_POST['di_google_maps_layer2_file'] ) );
+			update_option( 'di_google_maps_layer3_label', esc_attr( $_POST['di_google_maps_layer3_label'] ) );
+			update_option( 'di_google_maps_layer3_file', esc_attr( $_POST['di_google_maps_layer3_file'] ) );
+			update_option( 'di_google_maps_layer4_label', esc_attr( $_POST['di_google_maps_layer4_label'] ) );
+			update_option( 'di_google_maps_layer4_file', esc_attr( $_POST['di_google_maps_layer4_file'] ) );
+			update_option( 'di_google_maps_layer5_label', esc_attr( $_POST['di_google_maps_layer5_label'] ) );
+			update_option( 'di_google_maps_layer5_file', esc_attr( $_POST['di_google_maps_layer5_file'] ) );
+			echo 'Digging In Google Maps options updated!';
+		} else {
+			echo 'You do not have privileges to update these options.';
+		}
+		die();
+	}
+
+	/**
+		 * This is the callback function for di-options-updater.js's
+		 * AJAX request, deleting all student-submitted media.
+		 *
+		 * @access public
+		 * @return void
+		 */
+	public function di_delete_all_media_callback() {
+		if( current_user_can( 'edit_pages' ) ) {
+			$di_media = get_posts( array( 'post_type' => 'di_media', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+			foreach( $di_media as $di_medium ) {
+				wp_delete_post( $di_medium->ID );
+			}
+			echo 'All student-submitted media deleted!';
+		} else {
+			echo 'You do not have privileges to update these options.';
+		}
+		die();
+	}
+
+	/**
+		 * This is the callback function for di-options-updater.js's
+		 * AJAX request, deleting all student-submitted media.
+		 *
+		 * @access public
+		 * @return void
+		 */
+	public function di_delete_all_groups_callback() {
+		if( current_user_can( 'edit_pages' ) ) {
+			$di_groups = get_posts( array( 'post_type' => 'di_group', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+			foreach( $di_groups as $di_group ) {
+				wp_delete_post( $di_group->ID );
+			}
+			echo 'All student groups deleted!';
+		} else {
+			echo 'You do not have privileges to update these options.';
+		}
+		die();
+	}
+
+	/**
+		 * This is the callback function for di-options-updater.js's
+		 * AJAX request, deleting all student assessment results.
+		 *
+		 * @access public
+		 * @return void
+		 */
+	public function di_delete_all_results_callback() {
+		if( current_user_can( 'edit_pages' ) ) {
+			$di_results = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+			foreach( $di_results as $di_result ) {
+				wp_delete_post( $di_result->ID );
+			}
+			echo 'All student-submitted assessment results deleted!';
 		} else {
 			echo 'You do not have privileges to update these options.';
 		}

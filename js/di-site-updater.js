@@ -38,8 +38,10 @@ jQuery( document ).ready(function( $ ) {
 	});
 
 	// Event handler to delete a site. This function depends on GET parameters set up by WordPress and defined in class-di-wp-list-table-site.php.
-	jQuery( '.delete' ).click(function() {
-		deleteSite();
+	jQuery( '.delete' ).click(function(e) {
+		if ( confirm( "I understand and confirm I wish to delete this site." ) == false ) {
+			e.preventDefault();
+		}
 	});
 
 	// Event handler for the user clicking on Google Maps.
@@ -109,12 +111,4 @@ function editSiteSubmit() {
 	jQuery.post( ajax_object.ajax_url, data, function( response ) {
 		location.reload();
 	});
-}
-
-/**
- * Function to delete a site. It depends on GET parameters being set by
- * class-di-wp-list-table-site, then reloads the page.
- */
-function deleteSite() {
-	location.reload();
 }

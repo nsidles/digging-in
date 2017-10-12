@@ -1,26 +1,13 @@
 <?php
 /**
-* The DI_Admin superclass.
-*
-* This file defines the DI_Admin superclass and requires its subclasses,
-* allowing users to administer the Digging In backend.
-*
-* It also controls some of the Digging In options.
-*
-* It also defines three types of custom WordPress posts:
-*
-* - di_site: an individual soil site (or candidate soil site).
-* - di_tour: a collection of soil sites.
-* - di_medium: an instance of media associated with a particular soil site.
-*
-* Administration of each of these types is defined by its own subclass of
-* DI_Admin. These types interact in the DI_View and DI_Data classes.
-*
-* DI_Admin depeneds on jQuery and Google Maps.
-*
-* @package WordPress
-* @subpackage Digging_In
-*/
+ * The DI_View class
+ *
+ * This file defines the DI_View class. This
+ * class produces the main views of the Digging In plugin.
+ *
+ * @package WordPress
+ * @subpackage Digging_In
+ */
 
 // require_once( plugin_dir_path( __FILE__ ).'class-di-admin-site.php' );
 
@@ -29,11 +16,25 @@ new DI_View_JSON();
 
 class DI_View {
 
+	/**
+	 * This function constructs the DI_View object.
+	 *
+	 * @access public
+	 */
 	public function __construct() {
 		$this->add_shortcodes();
 		$this->add_actions();
 	}
 
+	/**
+	 * This function adds the desired UBCAR query variable to the query_vars
+	 * array
+	 *
+	 * @param array $query_vars
+	 *
+	 * @access public
+	 * @return array
+	 */
 	public function add_shortcodes() {
 		add_shortcode( 'di-map', array( $this, 'di_make_map' ) );
 	}
@@ -204,31 +205,96 @@ class DI_View {
 		$di_assessment = get_post( $_POST['di_assessment_id'] );
 		$di_assessment_slides = get_post_meta( $di_assessment->ID, 'di_assessment_slides', true );
 		$di_assessment_data = get_post_meta( $di_assessment->ID, 'di_assessment_data', true );
+		$di_group_id = $this->di_get_group( $_POST['di_user_id'] );
+		$di_assessment_answers = $this->di_get_group_answers( $di_group_id, $_POST['di_assessment_id'] );
+		$di_assessment_result_id = $this->di_get_group_assessment_result_id( $di_group_id, $_POST['di_assessment_id'] );
 		$json_response = array(
 			'id' => $di_assessment->ID,
 			'title' => $di_assessment->post_title,
 			'content' => $di_assessment_slides,
-			'data' => $di_assessment_data
+			'data' => $di_assessment_data,
+			'group' => $di_group_id,
+			'answers' => $di_assessment_answers,
+			'answers_id' => $di_assessment_result_id
 		);
 		wp_send_json( $json_response );
 		die();
+	}
+
+	public function di_get_group( $di_user_id ) {
+		$di_groups = get_posts( array( 'posts_per_page' => -1, 'post_type' => 'di_group', 'order' => 'DESC' ) );
+		foreach( $di_groups as $di_group ) {
+			$di_group_people = get_post_meta( $di_group->ID, 'di_group_people', true );
+			if( $di_group_people != '' ) {
+				foreach( $di_group_people as $di_group_person ) {
+					if( $di_group_person == $di_user_id ) {
+						return $di_group->ID;
+					}
+				}
+			}
+		}
+		return;
+	}
+
+	public function di_get_group_assessment_result_id( $di_group_id, $di_assessment_id ) {
+		$di_assessment_results = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+		foreach( $di_assessment_results as $di_assessment_result ) {
+			$di_asr_group_id = get_post_meta( $di_assessment_result->ID, 'di_assessment_result_group', true );
+			$di_asr_assessment_id = get_post_meta( $di_assessment_result->ID, 'di_assessment_result_assessment', true );
+			if( $di_asr_assessment_id == $di_assessment_id && $di_asr_group_id == $di_group_id ) {
+				return $di_assessment_result->ID;
+			}
+		}
+		return;
+	}
+
+	public function di_get_group_answers( $di_group_id, $di_assessment_id ) {
+		$di_assessment_results = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+		foreach( $di_assessment_results as $di_assessment_result ) {
+			$di_asr_group_id = get_post_meta( $di_assessment_result->ID, 'di_assessment_result_group', true );
+			$di_asr_assessment_id = get_post_meta( $di_assessment_result->ID, 'di_assessment_result_assessment', true );
+			if( $di_asr_assessment_id == $di_assessment_id && $di_asr_group_id == $di_group_id ) {
+				return $di_assessment_result->post_content;
+			}
+		}
+		return;
 	}
 
 	public function di_map_add_assessment_result_callback() {
 		global $wpdb;
 		if ( !isset( $_POST['di_nonce_field'] ) || !wp_verify_nonce( $_POST['di_nonce_field'],'di_nonce_check' ) ) {
 			echo 'Sorry, WordPress has rejected your submission - specifically, your nonce did not verify. Please reload the form page and try again. This message may occur if you took more than a day to complete your form, if you do not have the appropriate privileges to submit soil groups but nonetheless try, or if the Digging In coding team made an error.';
+			die();
 		} else {
-			$di_assessment_result_post = array(
-					'post_title' => sanitize_text_field( $_POST['di_assessment_result_title'] ),
-					'post_author' => sanitize_text_field( $_POST['di_assessment_result_user'] ),
-					'post_content' => sanitize_text_field( $_POST['di_assessment_result_data'] ),
-					'post_status' => 'publish',
-					'post_type' => 'di_assessment_result'
-			);
-			$di_assessment_result_id = wp_insert_post( $di_assessment_result_post );
-			add_post_meta( $di_assessment_result_id, 'di_assessment_result_site', $_POST['di_assessment_result_site'] );
-			add_post_meta( $di_assessment_result_id, 'di_assessment_result_assessment', $_POST['di_assessment_result_assessment'] );
+
+			$di_results = get_posts( array( 'posts_per_page' => -1, 'order' => 'ASC', 'post_type' => 'di_assessment_result' ) );
+			$di_groups = $di_sites = get_posts( array( 'posts_per_page' => -1, 'order' => 'ASC', 'post_type' => 'di_site' ) );
+
+			$di_groups = get_posts( array( 'posts_per_page' => -1, 'order' => 'ASC', 'post_type' => 'di_group' ) );
+
+			foreach( $di_groups as $di_group ) {
+				$di_group_students = get_post_meta( $di_group->ID, 'di_group_people', true );
+				foreach( $di_group_students as $di_group_student ) {
+					if( $di_group_student == $_POST['di_assessment_result_user'] ) {
+						$di_assessment_result_post = array(
+								'post_title' => sanitize_text_field( $_POST['di_assessment_result_title'] ),
+								'post_author' => sanitize_text_field( $_POST['di_assessment_result_user'] ),
+								'post_content' => sanitize_text_field( $_POST['di_assessment_result_data'] ),
+								'post_status' => 'publish',
+								'post_type' => 'di_assessment_result'
+						);
+						if( $_POST['di_assessment_result_id'] != '' ) {
+							$di_assessment_result_post['ID'] = $_POST['di_assessment_result_id'];
+							$di_assessment_result_id = wp_update_post( $di_assessment_result_post );
+						} else {
+							$di_assessment_result_id = wp_insert_post( $di_assessment_result_post );
+						}
+						add_post_meta( $di_assessment_result_id, 'di_assessment_result_group', $di_group->ID );
+						add_post_meta( $di_assessment_result_id, 'di_assessment_result_site', $_POST['di_assessment_result_site'] );
+						add_post_meta( $di_assessment_result_id, 'di_assessment_result_assessment', $_POST['di_assessment_result_assessment'] );
+					}
+				}
+			}
 		}
 		echo "Assessment submitted!";
 		die();

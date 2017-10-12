@@ -124,7 +124,7 @@
 		function di_get_media() {
 			global $wpdb;
 			$response = array();
-			$di_sites = get_posts( array( 'post_type' => 'di_media', 'order' => 'DESC' ) );
+			$di_sites = get_posts( array( 'post_type' => 'di_media', 'order' => 'DESC', 'posts_per_page' => -1 ) );
 			foreach ( $di_sites as $di_site ) {
 				$tempArray = $this->di_get_site_metadata( $di_site->ID );
 				array_push( $response, $tempArray );

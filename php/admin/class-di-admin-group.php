@@ -48,9 +48,23 @@ class DI_Admin_Group extends DI_Admin {
 		wp_localize_script( 'di_control_panel_group_updater_script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 		wp_enqueue_script( 'di_control_panel_script', array( 'jquery' ) );
 		wp_enqueue_script( 'jquery-ui-sortable', array( 'jquery' ) );
+
 		$di_people = get_users();
+		foreach( $di_people as $di_person )
+			$di_people_map[$di_person->ID] = $di_person;
+
+		$di_groups = get_posts( array( 'posts_per_page' => -1, 'post_type' => 'di_group', 'order' => 'DESC' ) );
+		foreach( $di_groups as $di_group ) {
+			$di_group_people = get_post_meta( $di_group->ID, 'di_group_people', true );
+			if( $di_group_people != '' )
+				foreach( $di_group_people as $di_group_person ) {
+					if( isset( $di_people_map[$di_group_person] ) )
+						unset( $di_people_map[$di_group_person] );
+				}
+		}
+
 		?>
-			<h1>Digging In Student Groups</h1>
+			<h1>Digging In Students and Groups</h1>
 			<p></p>
 			<hr />
 			<h3 id="di-add-new-toggle">Add New Group<span class="di-menu-toggle" id="di-add-toggle-arrow">&#9660</span></h3>
@@ -75,10 +89,10 @@ class DI_Admin_Group extends DI_Admin {
 					</div>
 					<div class="admin-wrapper">
 						<div class="di-tour-sites">
-							<h4>Available Students</h4>
+							<h4>Available Students (unassigned)</h4>
 							<ul id="di-group-people-complete-list" class="di-group-order-people">
 							<?php
-								foreach ( $di_people as $di_person ) {
+								foreach ( $di_people_map as $di_person ) {
 									echo '<li>' . $di_person->first_name . ' ' . $di_person->last_name . ' (' . $di_person->display_name . ')<input type="hidden" value="' . $di_person->ID . '"></li>';
 								}
 							?>
@@ -109,9 +123,9 @@ class DI_Admin_Group extends DI_Admin {
 		$item_students = get_post_meta( $item->ID, 'di_group_people', true );
 		$di_people = get_users();
 		if( $item_students != "" )
-		foreach( $item_students as $di_person ) {
-			@$di_people_ids[] = $di_person;
-		}
+			foreach( $item_students as $di_person ) {
+				@$di_people_ids[] = $di_person;
+			}
 		?>
 			<h3 id="di-add-new-toggle">Edit Group</h3>
 			<div class="wrap">
@@ -185,6 +199,7 @@ class DI_Admin_Group extends DI_Admin {
 	  $myListTable = new DI_WP_List_Table_Group();
 
 		echo '<div class="wrap"><h3>Existing Groups</h3>';
+
   	$myListTable->prepare_items();
   	echo '<form method="post">';
     echo '<input type="hidden" name="page" value="ttest_list_table">';

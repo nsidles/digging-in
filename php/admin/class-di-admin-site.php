@@ -97,11 +97,6 @@ class DI_Admin_Site extends DI_Admin {
 					<textarea name="di-site-description_edit" rows="5" type="textfield" id="di-site-description_edit" value="" class="regular-text ltr" /><?php echo $item_description; ?></textarea>
 				</div>
 				<div class="admin-wrapper">
-					<label>Associated Assessments</label>
-					<select>
-					</select>
-				</div>
-				<div class="admin-wrapper">
 					Latitude: <input name="di-site-latitude_edit" type="number" id="di-site-latitude_edit" value="<?php echo $item_latitude; ?>" class="regular-text ltr" /> Longitude: <input name="di-site-longitude_edit" type="number" id="di-site-longitude_edit" value="<?php echo $item_longitude; ?>" class="regular-text ltr" />
 					<div class="button button-primary" name="di-site-submit_edit" id="di-site-submit_edit">Update Site</div>
 				</div>

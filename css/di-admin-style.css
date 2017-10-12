@@ -217,3 +217,21 @@
   vertical-align: middle;
 	padding: 10px;
 }
+
+.di-list-controllers {
+	vertical-align: bottom;
+}
+
+.di-list-controller {
+	display: inline-block;
+	border: 1px solid #DDD;
+	padding: 5px;
+	margin: 2px;
+	border-radius: 2px;
+	vertical-align: middle;
+}
+
+.di-list-controller input,
+.di-list-controller .button {
+	height: 30px !important;
+}

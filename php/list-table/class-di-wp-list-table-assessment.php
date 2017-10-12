@@ -85,8 +85,7 @@
 		function column_id($item){
 		  $actions = array(
 			  'edit'      => sprintf('<a href="?page=%s&action=%s&assessment=%s">Edit</a>',$_REQUEST['page'],'edit',$item['id']),
-			  'delete'    => sprintf('<a href="?page=%s&action=%s&assessment=%s">Delete</a>',$_REQUEST['page'],'delete',$item['id']),
-				'copy'    => sprintf('<a href="?page=%s&action=%s&assessment=%s">Copy</a>',$_REQUEST['page'],'copy',$item['id']),
+			  'delete'    => sprintf('<a href="?page=%s&action=%s&assessment=%s">Delete</a>',$_REQUEST['page'],'delete',$item['id'])
 			);
 		  return sprintf('%1$s %2$s', $item['id'], $this->row_actions($actions) );
 		}

@@ -25,17 +25,6 @@ echo $file_url;
 
 die();
 
-// file_put_contents( 'temp_upload/' . $user . '-' . $_FILES["file"]["name"], $data);
-// $_FILES['file']['tmp_name'] = 'temp_upload/' . $user . '-' . $_FILES["file"]["name"];
-
-// media_handle_upload( 'file', 0 );
-
-// print_r( $_FILES );
-
-// echo 'http://localhost:8888/ubcar/wp-content/plugins/digging-in/php/temp_upload/' . $user . '-' . $_FILES["file"]["name"];
-
-die();
-
 if(isset($_FILES["file"]["type"]))
 {
 	$validextensions = array("jpeg", "jpg", "png");

@@ -10,6 +10,12 @@ jQuery( document ).ready(function( $ ) {
 	detectEditMode();
 	enableButtons();
 
+	jQuery( '.delete' ).click(function(e) {
+		if ( confirm( "I understand and confirm I wish to delete this assessment." ) == false ) {
+			e.preventDefault();
+		}
+	});
+
 });
 
 /**

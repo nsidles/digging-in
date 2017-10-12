@@ -29,6 +29,7 @@ class DI_Admin_Assessment_Result extends DI_Admin {
 	function add_actions() {
 		add_action( 'wp_ajax_digging_in_add_assessment_result_evaluation', array( $this, 'di_assessment_result_adder_callback' ) );
 		add_action( 'wp_ajax_get_assessment_result', array( $this, 'di_get_assessment_result_callback' ) );
+		add_action( 'wp_ajax_get_assessments_export', array( $this, 'di_get_assessments_export_callback' ) );
 	}
 
 	function add_menu_page() {
@@ -83,6 +84,89 @@ class DI_Admin_Assessment_Result extends DI_Admin {
 		die();
 	}
 
+	function di_get_assessments_export_callback() {
+		global $wpdb;
+		if ( !isset( $_POST['di_nonce_field'] ) || !wp_verify_nonce( $_POST['di_nonce_field'],'di_nonce_check' ) ) {
+			echo 'Sorry, WordPress has rejected your submission - specifically, your nonce did not verify. Please reload the form page and try again. This message may occur if you took more than a day to complete your form, if you do not have the appropriate privileges to submit soil groups but nonetheless try, or if the Digging In coding team made an error.';
+		} else {
+			$reponse = array();
+			$di_sites = get_posts( array( 'post_type' => 'di_assessment_result', 'order' => 'DESC', 'posts_per_page' => -1 ) );
+			foreach ( $di_sites as $di_site ) {
+				$tempArray = $this->di_get_site_metadata( $di_site->ID );
+				if( $tempArray != null ) {
+					$slides = json_decode( $di_site->post_content );
+					foreach( $slides as $slide ) {
+
+						$tempArray['title'] = $slide->title;
+						$tempArray['recordedMultipleChoiceQuestion'] = $slide->recordedMultipleChoice->question;
+						$tempArray['recordedMultipleChoiceAnswer'] = $slide->recordedMultipleChoice->answer;
+						if( $slide->recordedMultipleChoice->correct == true ) {
+							$tempArray['recordedMultipleChoiceCorrect'] = 'correct';
+						} else {
+							$tempArray['recordedMultipleChoiceCorrect'] = '';
+						}
+						$tempArray['recordedMultipleChoiceNotes'] = $slide->recordedMultipleChoice->notes;
+
+						$tempArray['textQuestion'] = $slide->text->question;
+						$tempArray['textAnswer'] = $slide->text->answer;
+						if( $slide->text->correct == true ) {
+							$tempArray['textCorrect'] = 'correct';
+						} else {
+							$tempArray['textCorrect'] = '';
+						}
+						$tempArray['textNotes'] = $slide->text->notes;
+
+						$tempArray['imageQuestion'] = $slide->image->question;
+						$tempArray['imageAnswer'] = $slide->image->answer;
+						if( $slide->image->correct == true ) {
+							$tempArray['imageCorrect'] = 'correct';
+						} else {
+							$tempArray['imageCorrect'] = '';
+						}
+						$tempArray['imageNotes'] = $slide->image->notes;
+						$response[] = $tempArray;
+					}
+				}
+			}
+			wp_send_json( $response );
+		}
+		die();
+	}
+
+	function di_get_site_metadata( $di_asr_id ) {
+		$di_asr = get_post( $di_asr_id );
+		$di_asr_assessment_id = get_post_meta( $di_asr->ID, 'di_assessment_result_assessment', true );
+		$di_asr_site_id = get_post_meta( $di_asr->ID, 'di_assessment_result_site', true );
+		$di_asr_author = get_user_by( 'id', $di_asr->post_author );
+		$di_asr_group_id = get_post_meta( $di_asr->ID, 'di_assessment_result_group', true );
+		$di_asr_group = get_post( $di_asr_group_id );
+		$tempArray = array();
+		$tempArray["id"] = $di_asr->ID;
+		$tempArray["date"] = $di_asr->post_date;
+		$tempArray["uploader"] = $di_asr_author->first_name . ' ' . $di_asr_author->last_name . ' (' . $di_asr_author->ID . ')';
+		@$tempArray["uploader_group"] = $di_asr_group->post_title . ' (#' . $di_asr_group_id . ')';
+
+		$di_group_meta_students = get_post_meta( $di_asr_group->ID, 'di_group_people', true );
+		if( $di_group_meta_students != "" ) {
+			foreach( $di_group_meta_students as $student ) {
+				$tempNameArray[] = get_user_by( 'id', $student )->first_name . " " . get_user_by( 'id', $student )->last_name;
+			}
+			$tempArray["students"] = implode( ", ", $tempNameArray);
+		} else {
+			$tempArray["students"] = "";
+		}
+
+		$tempArray["site"] = get_post( $di_asr_site_id )->post_title . ' (#' . $di_asr_site_id . ')';
+		$tempArray["assessment"] = get_post( $di_asr_assessment_id )->post_title . ' (#' . $di_asr_assessment_id . ')';
+		if( isset( $_GET['di_group'] ) && $_GET['di_group'] != $di_asr_group_id )
+			return;
+		if( isset( $_GET['di_assessment'] ) && $_GET['di_assessment'] != $di_asr_assessment_id )
+			return;
+		if( isset( $_GET['di_site'] ) && $_GET['di_site'] != $di_asr_site_id )
+			return;
+		return $tempArray;
+	}
+
 	function add_list_table() {
 		global $myListTable;
 	  $option = 'per_page';
@@ -94,9 +178,28 @@ class DI_Admin_Assessment_Result extends DI_Admin {
 
 	  add_screen_option( $option, $args );
 	  $myListTable = new DI_WP_List_Table_Assessment_Result();
-
-		echo '<div class="digging-in-admin-list">';
+		echo '<div class="digging-in-admin-list"><div style="display: none;" id="page-link">' . admin_url('admin.php?page=di-assessment-results') . '</div>';
 		echo '<h3>Existing Assessment Results</h3>';
+		if( current_user_can( 'manage_options' ) ) {
+			echo '<div class="di-list-controllers">
+							<div class="di-list-controller">
+								Filter by Group: <input placeholder="Group ID..." type="text" id="diar-group" value="' . ( isset( $_GET['di_group'] ) ? $_GET['di_group'] : '' ) . '"/>
+							</div>
+							<div class="di-list-controller">
+								Filter by Site ID: <input placeholder="Site ID..." type="text" id="diar-site" value="' . ( isset( $_GET['di_site'] ) ? $_GET['di_site'] : '' ) . '"/>
+							</div>
+							<div class="di-list-controller">
+								Filter by Assessment ID: <input placeholder="Assessment ID..." type="text" id="diar-assessment" value="' . ( isset( $_GET['di_assessment'] ) ? $_GET['di_assessment'] : '' ) . '"/>
+							</div>
+							<div class="di-list-controller">
+								<div class="button" id="di-filter">Apply Filter</div>
+								<a class="button" id="di-filter-clear" href="' . admin_url('admin.php?page=di-assessment-results') . '">Clear Filters</a>
+							</div>
+							<div class="di-list-controller">
+								<div class="button" id="diar-export">Export</div>
+							</div>
+						</div>';
+		}
   	$myListTable->prepare_items();
   	echo '<form method="post">';
     echo '<input type="hidden" name="page" value="ttest_list_table">';

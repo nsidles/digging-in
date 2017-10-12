@@ -293,7 +293,6 @@ class DI_Admin_Media extends DI_Admin {
 	  add_screen_option( $option, $args );
 	  $myListTable = new DI_WP_List_Table_Media();
 
-		echo '<div class="wrap"><h3>Existing Media <div class="button button-primary" id="di-remove-student-media" style="float: right;">Delete all unchecked media</div></h3>';
   	$myListTable->prepare_items();
   	echo '<form method="post">';
     echo '<input type="hidden" name="page" value="ttest_list_table">';
