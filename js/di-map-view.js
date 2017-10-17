@@ -88,7 +88,7 @@ function DIMap( map ) {
 			'di_site_id': siteID
 		};
 		jQuery.post( ajax_object.ajax_url, data, function( response ) {
-
+console.log( response );
 			jQuery( '#di-site .main-left' ).html( '' );
 			jQuery( '#di-site .main-right' ).html( '' );
 
@@ -145,9 +145,8 @@ function DIMap( map ) {
 						studentAnswers = new Object();
 						studentAnswersID = '';
 					}
-					
+
 					if( typeof studentAnswers[assessmentID] === 'undefined' || studentAnswers[assessmentID] === null ) {
-						alert("hello");
 						studentAnswers[assessmentID] = new Object();
 						for( i in assessment ) {
 							if( typeof studentAnswers[assessmentID][i] === 'undefined' ) {

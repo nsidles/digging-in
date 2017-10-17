@@ -59,14 +59,16 @@ class DI_View {
 	public function add_styles() {
 		wp_register_style( 'di_view_style', plugins_url( 'css/di-view-style.css', dirname( dirname( __FILE__ ) ) ) );
 		wp_enqueue_style( 'di_view_style' );
+		if( isset( $_GET['di_point_view'] ) && $_GET['di_point_view'] != '' ) {
+			wp_register_style( 'di_view_style-mobile', plugins_url( 'css/di-view-style-mobile.css', dirname( dirname( __FILE__ ) ) ) );
+			wp_enqueue_style( 'di_view_style-mobile' );
+		}
 	}
 
 	public function di_make_map() {
 		$this->add_scripts();
 		$this->add_styles();
 		wp_nonce_field( 'di_nonce_check','di-nonce-field' );
-		if( isset( $_GET['di_point_view'] ) && $_GET['di_point_view'] != '' ) {
-		}
 		?>
 			<div id="di-user" class="hidden"><?php echo wp_get_current_user()->user_login; ?></div>
 			<div id="di-user-id" class="hidden"><?php echo wp_get_current_user()->ID; ?></div>
@@ -165,25 +167,25 @@ class DI_View {
 			foreach( $di_media_array as $di_medium_id ) {
 				$di_medium = get_post( $di_medium_id );
 				$di_media_meta = get_post_meta( $di_medium_id, 'di_media_meta', true );
-				$di_media_author = get_user_by( 'id', $di_medium_id->post_author );
+				if( $di_media_meta ) {
 
-				$tempArray = array();
+					$tempArray = array();
 
-				if( $di_media_meta['type'] == 'image' || $di_media_meta['type'] == 'imagewp' ) {
-					$tempArray["url"] = wp_get_attachment_thumb_url( $di_media_meta['url'] );
-					$tempArray["full_size_url"] = wp_get_attachment_url( $di_media_meta['url'] );
-					$tempArray["media"] = '<a href="' . $tempArray["full_size_url"] . '"><img src="' . $tempArray["full_size_url"] . '" /></a>';
-				} else if( $di_media_meta['type'] == 'video' ) {
-					$tempArray["media"] = '<iframe width="600" height="450" src="//www.youtube.com/embed/' . $di_media_meta['url'] . '" frameborder="0" allowfullscreen></iframe>';
-				} else {
-					$tempArray["media"] = $di_media_meta['url'];
+					if( $di_media_meta['type'] == 'image' || $di_media_meta['type'] == 'imagewp' ) {
+						$tempArray["url"] = wp_get_attachment_thumb_url( $di_media_meta['url'] );
+						$tempArray["full_size_url"] = wp_get_attachment_url( $di_media_meta['url'] );
+						$tempArray["media"] = '<a href="' . $tempArray["full_size_url"] . '"><img src="' . $tempArray["full_size_url"] . '" /></a>';
+					} else if( $di_media_meta['type'] == 'video' ) {
+						$tempArray["media"] = '<iframe width="600" height="450" src="//www.youtube.com/embed/' . $di_media_meta['url'] . '" frameborder="0" allowfullscreen></iframe>';
+					} else {
+						$tempArray["media"] = $di_media_meta['url'];
+					}
+
+					$tempArray["id"] = $di_medium->ID;
+					$tempArray["title"] = $di_medium->post_title;
+					$tempArray["description"] = $di_medium->post_content;
+					$json_response['di_media'][] = $tempArray;
 				}
-
-				$tempArray["id"] = $di_medium->ID;
-				$tempArray["uploader"] = $di_site_author->first_name . ' ' . $di_site_author->last_name . ' (' . $di_site_author->user_login . ')';
-				$tempArray["title"] = $di_medium->post_title;
-				$tempArray["description"] = $di_medium->post_content;
-				$json_response['di_media'][] = $tempArray;
 			}
 		}
 
