@@ -87,9 +87,9 @@
 
 		function usort_reorder( $a, $b ) {
 		  // If no sort, default to title
-		  $orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'id';
+		  $orderby = ( ! empty( $_GET['orderby'] ) ) ? $sanitize_text_field( _GET['orderby'] ) : 'id';
 		  // If no order, default to asc
-		  $order = ( ! empty($_GET['order'] ) ) ? $_GET['order'] : 'asc';
+		  $order = ( ! empty($_GET['order'] ) ) ? sanitize_text_field( $_GET['order'] ) : 'asc';
 		  // Determine sort order
 		  $result = strcmp( $a[$orderby], $b[$orderby] );
 		  // Send final sort direction to usort

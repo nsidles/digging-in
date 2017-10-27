@@ -75,7 +75,15 @@ class DI_View {
 			<div id="di-site-id" class="hidden"><?php echo ( isset( $_GET['di_point_view'] ) && $_GET['di_point_view'] != '' ) ? $_GET['di_point_view'] : ''; ?></div>
 			<div id="di-assessment-id" class="hidden"></div>
 			<div id="di-assessment-slide-id" class="hidden"></div>
-			<div id="di-map-canvas">
+			<div id="di-map">
+				<div id="di-map-canvas">
+				</div>
+				<div id="di-map-control">
+	        <label id="label1"><input type="checkbox" id="map-control-1" checked> Delta-Tsawwassen</label>
+	        <label id="label2"><input type="checkbox" id="map-control-2" checked> Bose-Heron</label>
+	        <label id="label3"><input type="checkbox" id="map-control-3" checked> Langley-Cloverdale</label>
+	        <label id="label4"><input type="checkbox" id="map-control-4" checked> Whatcom-Scat</label>
+	      </div>
 			</div>
 			<div id="di-site">
 				<div class="main-left"></div>
@@ -297,8 +305,8 @@ class DI_View {
 					}
 				}
 			}
+			echo "Assessment submitted! (ID# " . $di_assessment_result_id . ")";
 		}
-		echo "Assessment submitted!";
 		die();
 	}
 }

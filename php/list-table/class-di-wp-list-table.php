@@ -5,7 +5,7 @@
 	}
 
 
-	class My_Example_List_Table extends WP_List_Table_Test {
+	class Digging_In_List_Table extends WP_List_Table_Test {
 
     function __construct(){
     	global $status, $page;

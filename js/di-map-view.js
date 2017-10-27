@@ -693,13 +693,14 @@ console.log( response );
 			var fd = new FormData(document.forms[0]);
 			fd.append("file", blob, "test.jpg");
 			jQuery.ajax( {
-				url: "../wp-content/plugins/digging-in/php/ajax_php_file.php", 	// Url to which the request is send
+				url: "../wp/wp-content/plugins/digging-in/php/ajax_php_file.php", 	// Url to which the request is send
 				type: "POST",             																			// Type of request to be send, called as method
 				data: fd, 																											// Data sent to server, a set of key/value pairs (i.e. form fields and values)
 				contentType: false,       																			// The content type used when sending data to the server.
 				cache: false,             																			// To unable request pages to be cached
 				processData:false,        																			// To send DOMDocument or non processed data file it is set to false
 				success: function(data) {
+					alert( "Image uploaded" );
 					studentAnswers[currentAssessmentID][currentSlideID].image.answer = data;
 				}
 			});

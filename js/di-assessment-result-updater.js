@@ -52,6 +52,7 @@ jQuery( document ).ready(function( $ ) {
 			'di_nonce_field': jQuery( '#di-nonce-field' ).val(),
 		};
 		jQuery.post( ajax_object.ajax_url, data, function( response ) {
+			console.log( response );
 			exportToCSV( 'export.csv', response );
 		});
 	});

@@ -1,22 +1,6 @@
 <?php
 /**
-* The DI_Admin superclass.
-*
-* This file defines the DI_Admin superclass and requires its subclasses,
-* allowing users to administer the Digging In backend.
-*
-* It also controls some of the Digging In options.
-*
-* It also defines three types of custom WordPress posts:
-*
-* - di_site: an individual soil site (or candidate soil site).
-* - di_tour: a collection of soil sites.
-* - di_medium: an instance of media associated with a particular soil site.
-*
-* Administration of each of these types is defined by its own subclass of
-* DI_Admin. These types interact in the DI_View and DI_Data classes.
-*
-* DI_Admin depeneds on jQuery and Google Maps.
+* The DI_Admin_Group subclass.
 *
 * @package WordPress
 * @subpackage Digging_In
@@ -33,11 +17,11 @@ class DI_Admin_Group extends DI_Admin {
 
 	function add_menu_page() {
 		$this->add_new_item();
-		if( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
-			$this->edit_item( $_GET['group'] );
+		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'edit' ) {
+			$this->edit_item( intval( $_GET['group'] ) );
 		}
-		if( isset( $_GET['action'] ) && $_GET['action'] == 'delete' ) {
-			$this->delete_item( $_GET['group'] );
+		if( isset( sanitize_text_field( $_GET['action'] ) ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
+			$this->delete_item( intval( $_GET['group'] ) );
 		}
 		$this->add_list_table();
 	}
@@ -218,8 +202,8 @@ class DI_Admin_Group extends DI_Admin {
 					'post_type' => 'di_group'
 			);
 			$di_group_id = wp_insert_post( $di_group_post );
-			add_post_meta( $di_group_id, 'di_group_ta', $_POST['di_group_ta'] );
-			add_post_meta( $di_group_id, 'di_group_people', $_POST['di_group_people'] );
+			add_post_meta( $di_group_id, 'di_group_ta', intval( $_POST['di_group_ta'] ) );
+			add_post_meta( $di_group_id, 'di_group_people', intval( $_POST['di_group_people'] ) );
 		}
 		die();
 	}
@@ -236,8 +220,8 @@ class DI_Admin_Group extends DI_Admin {
 					'post_type' => 'di_group'
 			);
 			$di_group_id = wp_update_post( $di_group_post );
-			update_post_meta( $di_group_id, 'di_group_people', $_POST['di_group_people'] );
-			update_post_meta( $di_group_id, 'di_group_ta', $_POST['di_group_ta'] );
+			update_post_meta( $di_group_id, 'di_group_people', sanitize_text_field( $_POST['di_group_people'] ) );
+			update_post_meta( $di_group_id, 'di_group_ta', intval( $_POST['di_group_ta'] ) );
 		}
 		echo $_POST['di_group_id'];
 		die();

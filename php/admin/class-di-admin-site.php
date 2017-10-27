@@ -34,11 +34,11 @@ class DI_Admin_Site extends DI_Admin {
 	function add_menu_page() {
 		wp_nonce_field( 'di_nonce_check','di-nonce-field' );
 		$this->add_new_item();
-		if( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
-			$this->edit_item( $_GET['site'] );
+		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'edit' ) {
+			$this->edit_item( intval( $_GET['site'] ) );
 		}
-		if( isset( $_GET['action'] ) && $_GET['action'] == 'delete' ) {
-			$this->delete_item( $_GET['site'] );
+		if( isset( sanitize_text_field( $_GET['action'] ) ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
+			$this->delete_item( intval( $_GET['site'] ) );
 		}
 		$this->add_list_table();
 	}
@@ -154,7 +154,7 @@ class DI_Admin_Site extends DI_Admin {
 			echo 'Sorry, WordPress has rejected your submission - specifically, your nonce did not verify. Please reload the form page and try again. This message may occur if you took more than a day to complete your form, if you do not have the appropriate privileges to submit soil sites but nonetheless try, or if the Digging In coding team made an error.';
 		} else {
 			$di_site_post = array(
-					'ID' => $_POST['di_site_id'],
+					'ID' => intval( $_POST['di_site_id'] ),
 					'post_title' => sanitize_text_field( $_POST['di_site_title'] ),
 					'post_content' => sanitize_text_field( $_POST['di_site_description'] ),
 					'post_status' => 'publish',

@@ -33,8 +33,8 @@ class DI_Admin_Assessment extends DI_Admin {
 	}
 
 	function add_menu_page() {
-		if( isset( $_GET['action'] ) && $_GET['action'] == 'delete' ) {
-			$this->delete_item( $_GET['assessment'] );
+		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
+			$this->delete_item( intval( $_GET['assessment'] ) );
 		}
 		$this->add_new_item();
 		$this->add_list_table();
@@ -224,7 +224,7 @@ class DI_Admin_Assessment extends DI_Admin {
 
 	function di_assessment_getter_callback() {
 		global $wpdb;
-		$di_assessment = get_post( $_POST['di_assessment_id'] );
+		$di_assessment = get_post( intval( $_POST['di_assessment_id'] ) );
 		$di_assessment_data = get_post_meta( $di_assessment->ID, 'di_assessment_data', true );
 		$json_response = array(
 			'id' => $di_assessment->ID,
@@ -247,10 +247,10 @@ class DI_Admin_Assessment extends DI_Admin {
 					'post_type' => 'di_assessment'
 			);
 			$di_assessment_id = wp_insert_post( $di_assessment_post );
-			add_post_meta( $di_assessment_id, 'di_assessment_sites', $_POST['di_assessment_locations'] );
-			add_post_meta( $di_assessment_id, 'di_assessment_slides', $_POST['di_assessment_content'] );
-			add_post_meta( $di_assessment_id, 'di_assessment_end_date', $_POST['di_assessment_end_date'] );
-			add_post_meta( $di_assessment_id, 'di_assessment_data', $_POST['di_assessment_data'] );
+			add_post_meta( $di_assessment_id, 'di_assessment_sites', sanitize_text_field( $_POST['di_assessment_locations'] ) );
+			add_post_meta( $di_assessment_id, 'di_assessment_slides', sanitize_text_field( $_POST['di_assessment_content'] ) );
+			add_post_meta( $di_assessment_id, 'di_assessment_end_date', sanitize_text_field( $_POST['di_assessment_end_date'] ) );
+			add_post_meta( $di_assessment_id, 'di_assessment_data', sanitize_text_field( $_POST['di_assessment_data'] ) );
 		}
 		echo sanitize_text_field( $_POST['di_assessment_title'] );
 		die();
@@ -268,10 +268,10 @@ class DI_Admin_Assessment extends DI_Admin {
 					'post_type' => 'di_assessment'
 			);
 			$di_assessment_id = wp_update_post( $di_assessment_post );
-			update_post_meta( $di_assessment_id, 'di_assessment_sites', $_POST['di_assessment_locations'] );
-			update_post_meta( $di_assessment_id, 'di_assessment_slides', $_POST['di_assessment_content'] );
-			update_post_meta( $di_assessment_id, 'di_assessment_end_date', $_POST['di_assessment_end_date'] );
-			update_post_meta( $di_assessment_id, 'di_assessment_data', $_POST['di_assessment_data'] );
+			update_post_meta( $di_assessment_id, 'di_assessment_sites', sanitize_text_field( $_POST['di_assessment_locations'] ) );
+			update_post_meta( $di_assessment_id, 'di_assessment_slides', sanitize_text_field( $_POST['di_assessment_content'] ) );
+			update_post_meta( $di_assessment_id, 'di_assessment_end_date', $sanitize_text_field( _POST['di_assessment_end_date'] ) );
+			update_post_meta( $di_assessment_id, 'di_assessment_data', sanitize_text_field( $_POST['di_assessment_data'] ) );
 		}
 		echo sanitize_text_field( $_POST['di_assessment_title'] );
 		die();

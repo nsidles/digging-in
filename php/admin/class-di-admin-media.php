@@ -58,8 +58,8 @@ class DI_Admin_Media extends DI_Admin {
 	function add_menu_page() {
 		$this->add_new_item();
 		$this->add_list_table();
-		if( isset( $_GET['action'] ) && $_GET['action'] == 'delete' ) {
-			$this->delete_item( $_GET['media'] );
+		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
+			$this->delete_item( intval( $_GET['media'] ) );
 		}
 	}
 
@@ -219,22 +219,22 @@ class DI_Admin_Media extends DI_Admin {
 					'post_status' => 'publish',
 					'post_type' => 'di_media'
 				);
-				if( $_POST['di-media-type'] == 'image' ) {
+				if( sanitize_text_field( $_POST['di-media-type'] ) == 'image' ) {
 					$di_url = media_handle_upload( 'di-media-upload', 0 );
 					if( is_wp_error( $di_url ) ) {
 						wp_redirect( menu_page_url( 'di-media', 0 ) . '&load=failure' );
 						exit;
 					}
-				} else if( $_POST['di-media-type'] == 'audio' ) {
+				} else if( sanitize_text_field( $_POST['di-media-type'] ) == 'audio' ) {
 					$di_url = $this->di_media_data_cleaner( $_POST['di-audio-url'] );
 					$di_media_post_meta['audio_type'] = $this->di_media_data_cleaner( $_POST['di-audio-type'] );
-				} else if( $_POST['di-media-type'] == 'video' ) {
+				} else if( sanitize_text_field( $_POST['di-media-type'] ) == 'video' ) {
 					$di_url = $this->di_media_data_cleaner(  substr( $_POST['di-video-url'], strrpos( $_POST['di-video-url'], "=" ) ) );
 					$di_media_post_meta['video_type'] = $this->di_media_data_cleaner(  $_POST['di-video-type'] );
-				} else if( $_POST['di-media-type'] == 'external' || $_POST['di-media-type'] == 'wiki' ) {
-					if( $_POST['di-media-type'] == 'external' ) {
+				} else if( sanitize_text_field( $_POST['di-media-type'] ) == 'external' || sanitize_text_field( $_POST['di-media-type'] ) == 'wiki' ) {
+					if( sanitize_text_field( $_POST['di-media-type'] ) == 'external' ) {
 						$di_url_string = esc_url( $_POST['di-external-url'] );
-					} else if( $_POST['di-media-type'] == 'wiki' ) {
+					} else if( sanitize_text_field( $_POST['di-media-type'] ) == 'wiki' ) {
 						$di_url_string = esc_url( $_POST['di-wiki-url'] );
 						$di_media_post['post_content'] = 'n/a';
 					}
@@ -244,11 +244,11 @@ class DI_Admin_Media extends DI_Admin {
 					} else {
 						$di_url .= 'http://' . $di_url_string;
 					}
-				} else if( $_POST['di-media-type'] == 'imagewp' ) {
+				} else if( sanitize_text_field( $_POST['di-media-type'] ) == 'imagewp' ) {
 					$di_url = $this->di_media_data_cleaner( $_POST['di-wp-image-url'] );
 				}
 				$di_media_post_meta['type'] = $this->di_media_data_cleaner( $_POST['di-media-type'] );
-				if( $_POST['di-media-type'] == 'imagewp' ) {
+				if( sanitize_text_field( $_POST['di-media-type'] ) == 'imagewp' ) {
 					$di_media_post_meta['type'] = 'image';
 				}
 				$di_media_post_meta['url'] =  $di_url;
@@ -260,7 +260,7 @@ class DI_Admin_Media extends DI_Admin {
 				}
 				$di_media_id = wp_insert_post( $di_media_post );
 				add_post_meta( $di_media_id, 'di_media_meta', $di_media_post_meta );
-				$di_location_media = get_post_meta( $_POST['di-media-site'], 'di_point_media', true );
+				$di_location_media = get_post_meta( sanitize_text_field( $_POST['di-media-site'] ), 'di_point_media', true );
 				if( $di_location_media == null ) {
 					$di_location_media = array();
 				}
