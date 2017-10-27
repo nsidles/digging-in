@@ -37,7 +37,7 @@ class DI_Admin_Site extends DI_Admin {
 		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'edit' ) {
 			$this->edit_item( intval( $_GET['site'] ) );
 		}
-		if( isset( sanitize_text_field( $_GET['action'] ) ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
+		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
 			$this->delete_item( intval( $_GET['site'] ) );
 		}
 		$this->add_list_table();

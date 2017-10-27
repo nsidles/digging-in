@@ -20,7 +20,7 @@ class DI_Admin_Group extends DI_Admin {
 		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'edit' ) {
 			$this->edit_item( intval( $_GET['group'] ) );
 		}
-		if( isset( sanitize_text_field( $_GET['action'] ) ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
+		if( isset( $_GET['action'] ) && sanitize_text_field( $_GET['action'] ) == 'delete' ) {
 			$this->delete_item( intval( $_GET['group'] ) );
 		}
 		$this->add_list_table();
