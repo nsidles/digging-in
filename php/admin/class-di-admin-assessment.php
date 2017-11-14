@@ -270,7 +270,7 @@ class DI_Admin_Assessment extends DI_Admin {
 			$di_assessment_id = wp_update_post( $di_assessment_post );
 			update_post_meta( $di_assessment_id, 'di_assessment_sites', sanitize_text_field( $_POST['di_assessment_locations'] ) );
 			update_post_meta( $di_assessment_id, 'di_assessment_slides', sanitize_text_field( $_POST['di_assessment_content'] ) );
-			update_post_meta( $di_assessment_id, 'di_assessment_end_date', $sanitize_text_field( _POST['di_assessment_end_date'] ) );
+			update_post_meta( $di_assessment_id, 'di_assessment_end_date', $sanitize_text_field( $_POST['di_assessment_end_date'] ) );
 			update_post_meta( $di_assessment_id, 'di_assessment_data', sanitize_text_field( $_POST['di_assessment_data'] ) );
 		}
 		echo sanitize_text_field( $_POST['di_assessment_title'] );
