@@ -63,7 +63,7 @@ class UBC_DI_View {
 		wp_enqueue_script( 'ubc_di_map_display_google_script', 'https://maps.googleapis.com/maps/api/js?v=3.exp&key=' . get_option( 'ubc_di_google_maps_api_key' ), array( 'jquery' ) );
 		wp_register_script( 'ubc_di_map_display_script', plugins_url( 'js/ubc-di-map-view.js', dirname( dirname( __FILE__ ) ) ) );
 		wp_enqueue_script( 'ubc_di_map_display_script', array( 'jquery' ) );
-		wp_localize_script( 'ubc_di_map_display_script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+		wp_localize_script( 'ubc_di_map_display_script', 'ubc_di_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 	}
 
 	/**

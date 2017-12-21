@@ -58,7 +58,7 @@ function DIMap( map ) {
 		data = {
 			'action': 'digging_in_get_sites'
 		};
-		jQuery.post( ajax_object.ajax_url, data, function( response ) {
+		jQuery.post( ubc_di_ajax_object.ajax_url, data, function( response ) {
 			tempData = new google.maps.Data();
 			tempData.addGeoJson( response.geojson );
 			tempData.setMap( mapInstance );
@@ -90,7 +90,7 @@ function DIMap( map ) {
 			'ubc_di_site_id': siteID,
 			'ubc_di_nonce_field': jQuery( '#di-nonce-field' ).val()
 		};
-		jQuery.post( ajax_object.ajax_url, data, function( response ) {
+		jQuery.post( ubc_di_ajax_object.ajax_url, data, function( response ) {
 			console.log( response );
 			jQuery( '#di-site .main-left' ).html( '' );
 			jQuery( '#di-site .main-right' ).html( '' );
@@ -135,7 +135,7 @@ function DIMap( map ) {
 			'ubc_di_user_id': jQuery( '#di-user-id' ).html(),
 			'ubc_di_nonce_field': jQuery( '#di-nonce-field' ).val(),
 		};
-		jQuery.post( ajax_object.ajax_url, data, function( response ) {
+		jQuery.post( ubc_di_ajax_object.ajax_url, data, function( response ) {
 				console.log( response );
 				assessment = response.data;
 
@@ -221,7 +221,7 @@ function DIMap( map ) {
 			for( var i in slideObject.multipleChoiceAnswers ) {
 				if( slideObject.multipleChoiceAnswers.hasOwnProperty( i ) ) {
 					answer = createGeneralElement( 'div', 'di-as-multiple-choice-answer', slideObject.multipleChoiceAnswers[i].text );
-					if( slideObject.multipleChoiceAnswers[i].correct == true ) {
+					if( slideObject.multipleChoiceAnswers[i].correct === true ) {
 						var correct = createGeneralElement( 'div', 'di-li-correct', ' (correct)' );
 						answer.appendChild( correct );
 						answer.classList.add( 'di-as-multiple-choice-correct' );
@@ -660,7 +660,7 @@ function DIMap( map ) {
 					'ubc_di_assessment_result_assessment': jQuery( '#di-assessment-id' ).html(),
 					'ubc_di_assessment_result_id': studentAnswersID
 				};
-				jQuery.post( ajax_object.ajax_url, data, function( response ) {
+				jQuery.post( ubc_di_ajax_object.ajax_url, data, function( response ) {
 					alert( response );
 					jQuery( '#di-review' ).toggle();
 					jQuery( '#di-reviewer-body' ).html( '' );
@@ -715,7 +715,7 @@ function DIMap( map ) {
 			fd.append('action', 'digging_in_upload_image');
 			fd.append( 'ubc_di_nonce_field', jQuery( '#di-nonce-field' ).val() );
 			jQuery.ajax( {
-						url: ajax_object.ajax_url, 	// Url to which the request is send
+						url: ubc_di_ajax_object.ajax_url, 	// Url to which the request is send
 						type: "POST",
 						data: fd,
 						contentType:false,

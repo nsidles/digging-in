@@ -308,9 +308,6 @@ function displayAssessmentEvaluate( assessmentResult, assessmentResultID ) {
 			'ubc_di_assessment_result_data': JSON.stringify( assessmentResult )
 		};
 		jQuery.post( ajax_object.ajax_url, data, function( response ) {
-			console.log( assessmentResult );
-			console.log( response )
-			// alert( response );
 			location.reload();
 
 		});
