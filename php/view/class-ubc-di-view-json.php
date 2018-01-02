@@ -75,14 +75,10 @@ class UBC_DI_View_JSON {
 	 */
 	function ubc_di_retrieve_sites() {
 		$args         = array(
-			'posts_per_page' => 100,
+			'posts_per_page' => -1,
 			'post_type'      => 'ubc_di_site',
-			'offset'         => 0,
 		);
-		while ( sizeof( get_posts( $args ) ) === 100 ) {
-			$all_ubc_di_points[] = get_posts( $args );
-			$args['offset'] += 100;
-		}
+		$ubc_di_points = array();
 		$all_ubc_di_points[] = get_posts( $args );
 		foreach ( $all_ubc_di_points as $temp_point ) {
 			$temp_inner_array                = array();

@@ -84,7 +84,8 @@ class UBC_DI_Admin_Assessment extends UBC_DI_Admin {
 			$ubc_di_edited_assessment = '';
 		}
 		if ( '' != $ubc_di_edited_assessment ) {
-			$ubc_di_edited_assessment_sites = explode( ',', get_post_meta( $ubc_di_edited_assessment_id, 'ubc_di_assessment_sites', true )[0] );
+			$post_meta = get_post_meta( $ubc_di_edited_assessment_id, 'ubc_di_assessment_sites', true );
+			$ubc_di_edited_assessment_sites = explode( ',', $post_meta[0] );
 			$ubc_di_edited_assessment_end_date = get_post_meta( $ubc_di_edited_assessment_id, 'ubc_di_assessment_end_date', true );
 			$ubc_di_edited_assessment_data = get_post_meta( $ubc_di_edited_assessment_id, 'ubc_di_assessment_data', true );
 			echo '<input type="hidden" id="di-assessment-id" value="' . esc_attr( $ubc_di_edited_assessment_id ) . '" />';
