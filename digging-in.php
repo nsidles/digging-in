@@ -9,7 +9,7 @@
 	 * assessments evaluated. This plugin was created for soil scientists, but it
 	 * can be used for many lessons.
 	 *
-	 * Version: 0.5.0
+	 * Version: 0.6
 	 * Author: Nathan Sidles
 	 * Author URI: http://sidl.es/
 	 * LICENSE: GPL2

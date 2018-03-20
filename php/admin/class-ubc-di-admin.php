@@ -147,17 +147,15 @@ class UBC_DI_Admin {
 			<p>This setting sets the API key that allows you to use Google maps to display soil sites.</p>
 			<?php echo '<input name="di-app-google-key" type="text" id="di-google-maps-api-key" value="' . esc_attr( get_option( 'ubc_di_google_maps_api_key' ) ) . '" class="regular-text ltr" />'; ?>
 			<h4>Google Maps Bounding Area</h4>
-			<p>Upper latitude: <?php echo '<input name="di-app-upper-lat" type="text" id="di-google-maps-upper-lat" value="' . esc_attr( get_option( 'ubc_di_google_maps_upper_lat' ) ) . '" />'; ?></p>
-			<p>Left longitude: <?php echo '<input name="di-app-left-lon" type="text" id="di-google-maps-left-lon" value="' . esc_attr( get_option( 'ubc_di_google_maps_left_lon' ) ) . '" />'; ?></p>
-			<p>Lower latitude: <?php echo '<input name="di-app-lower-lat" type="text" id="di-google-maps-lower-lat" value="' . esc_attr( get_option( 'ubc_di_google_maps_lower_lat' ) ) . '" />'; ?></p>
-			<p>Right longitude: <?php echo '<input name="di-app-right-lon" type="text" id="di-google-maps-right-lon" value="' . esc_attr( get_option( 'ubc_di_google_maps_right_lon' ) ) . '" />'; ?></p>
+			<p>Center latitude: <?php echo '<input name="di-app-center-lat" type="text" id="di-google-maps-center-lat" value="' . esc_attr( get_option( 'ubc_di_google_maps_center_lat' ) ) . '" />'; ?></p>
+			<p>Center longitude: <?php echo '<input name="di-app-center-lon" type="text" id="di-google-maps-center-lon" value="' . esc_attr( get_option( 'ubc_di_google_maps_center_lon' ) ) . '" />'; ?></p>
+			<p>Zoom level: <?php echo '<input name="di-app-zoom" type="text" id="di-google-maps-zoom" value="' . esc_attr( get_option( 'ubc_di_google_maps_zoom' ) ) . '" />'; ?></p>
 			<h4>Google Maps Layers</h4>
 			<p>Enable layers and buttons:</p>
 			<p>Layer 1 file: <?php echo '<input name="di-app-layer1-file" type="text" id="di-google-maps-layer1-file" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer1_file' ) ) . '" />'; ?> Layer 1 label: <?php echo '<input name="di-app-layer1-label" type="text" id="di-google-maps-layer1-label" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer1_label' ) ) . '" />'; ?></p>
 			<p>Layer 2 file: <?php echo '<input name="di-app-layer2-file" type="text" id="di-google-maps-layer2-file" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer2_file' ) ) . '" />'; ?> Layer 2 label: <?php echo '<input name="di-app-layer2-label" type="text" id="di-google-maps-layer2-label" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer2_label' ) ) . '" />'; ?></p>
 			<p>Layer 3 file: <?php echo '<input name="di-app-layer3-file" type="text" id="di-google-maps-layer3-file" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer3_file' ) ) . '" />'; ?> Layer 3 label: <?php echo '<input name="di-app-layer3-label" type="text" id="di-google-maps-layer3-label" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer3_label' ) ) . '" />'; ?></p>
 			<p>Layer 4 file: <?php echo '<input name="di-app-layer4-file" type="text" id="di-google-maps-layer4-file" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer4_file' ) ) . '" />'; ?> Layer 4 label: <?php echo '<input name="di-app-layer4-label" type="text" id="di-google-maps-layer4-label" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer4_label' ) ) . '" />'; ?></p>
-			<p>Layer 5 file: <?php echo '<input name="di-app-layer5-file" type="text" id="di-google-maps-layer5-file" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer5_file' ) ) . '" />'; ?> Layer 5 label: <?php echo '<input name="di-app-layer5-label" type="text" id="di-google-maps-layer5-label" value="' . esc_attr( get_option( 'ubc_di_google_maps_layer5_label' ) ) . '" />'; ?></p>
 			<div class="button button-primary" id="di-options-submit">Submit</div>
 			<hr />
 			<h3>Delete All Student Media</h3>
@@ -187,37 +185,41 @@ class UBC_DI_Admin {
 				echo 'Sorry, WordPress has rejected your submission - specifically, your nonce did not verify. Please reload the form page and try again. This message may occur if you took more than a day to complete your form, if you do not have the appropriate privileges to submit soil groups but nonetheless try, or if the Digging In coding team made an error.';
 				die();
 			} else {
-				if ( isset( $_POST['ubc_di_google_maps_api_key'] )
-					&& isset( $_POST['ubc_di_google_maps_upper_lat'] )
-					&& isset( $_POST['ubc_di_google_maps_left_lon'] )
-					&& isset( $_POST['ubc_di_google_maps_lower_lat'] )
-					&& isset( $_POST['ubc_di_google_maps_right_lon'] )
-					&& isset( $_POST['ubc_di_google_maps_layer1_label'] )
-					&& isset( $_POST['ubc_di_google_maps_layer1_file'] )
-					&& isset( $_POST['ubc_di_google_maps_layer2_label'] )
-					&& isset( $_POST['ubc_di_google_maps_layer2_file'] )
-					&& isset( $_POST['ubc_di_google_maps_layer3_label'] )
-					&& isset( $_POST['ubc_di_google_maps_layer3_file'] )
-					&& isset( $_POST['ubc_di_google_maps_layer4_label'] )
-					&& isset( $_POST['ubc_di_google_maps_layer4_file'] )
-					&& isset( $_POST['ubc_di_google_maps_layer5_label'] )
-					&& isset( $_POST['ubc_di_google_maps_layer5_file'] )
-				) {
+				if ( isset( $_POST['ubc_di_google_maps_api_key'] ) ) {
 					update_option( 'ubc_di_google_maps_api_key', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_api_key'] ) ) ) );
-					update_option( 'ubc_di_google_maps_upper_lat', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_upper_lat'] ) ) ) );
-					update_option( 'ubc_di_google_maps_left_lon', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_left_lon'] ) ) ) );
-					update_option( 'ubc_di_google_maps_lower_lat', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_lower_lat'] ) ) ) );
-					update_option( 'ubc_di_google_maps_right_lon', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_right_lon'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_center_lat'] ) ) {
+					update_option( 'ubc_di_google_maps_center_lat', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_center_lat'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_center_lon'] ) ) {
+					update_option( 'ubc_di_google_maps_center_lon', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_center_lon'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_zoom'] ) ) {
+					update_option( 'ubc_di_google_maps_zoom', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_zoom'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer1_label'] ) ) {
 					update_option( 'ubc_di_google_maps_layer1_label', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer1_label'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer1_file'] ) ) {
 					update_option( 'ubc_di_google_maps_layer1_file', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer1_file'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer2_label'] ) ) {
 					update_option( 'ubc_di_google_maps_layer2_label', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer2_label'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer2_file'] ) ) {
 					update_option( 'ubc_di_google_maps_layer2_file', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer2_file'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer3_label'] ) ) {
 					update_option( 'ubc_di_google_maps_layer3_label', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer3_label'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer3_file'] ) ) {
 					update_option( 'ubc_di_google_maps_layer3_file', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer3_file'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer4_label'] ) ) {
 					update_option( 'ubc_di_google_maps_layer4_label', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer4_label'] ) ) ) );
+				}
+				if ( isset( $_POST['ubc_di_google_maps_layer4_file'] ) ) {
 					update_option( 'ubc_di_google_maps_layer4_file', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer4_file'] ) ) ) );
-					update_option( 'ubc_di_google_maps_layer5_label', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer5_label'] ) ) ) );
-					update_option( 'ubc_di_google_maps_layer5_file', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_layer5_file'] ) ) ) );
 				}
 				echo 'Digging In Google Maps options updated!';
 			}

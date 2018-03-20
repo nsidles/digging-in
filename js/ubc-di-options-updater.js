@@ -42,9 +42,9 @@ function updateOptions() {
 		'action': 'options_updater',
 		'ubc_di_nonce_field': escapeHTML( jQuery( '#di-nonce-field' ).val() ),
 		'ubc_di_google_maps_api_key': escapeHTML( jQuery( '#di-google-maps-api-key' ).val() ),
-		'ubc_di_google_maps_upper_lat': escapeHTML( jQuery( '#di-google-maps-upper-lat' ).val() ),
-		'ubc_di_google_maps_left_lon': escapeHTML( jQuery( '#di-google-maps-left-lon' ).val() ),
-		'ubc_di_google_maps_lower_lat': escapeHTML( jQuery( '#di-google-maps-lower-lat' ).val() ),
+		'ubc_di_google_maps_center_lat': escapeHTML( jQuery( '#di-google-maps-center-lat' ).val() ),
+		'ubc_di_google_maps_center_lon': escapeHTML( jQuery( '#di-google-maps-center-lon' ).val() ),
+		'ubc_di_google_maps_zoom': escapeHTML( jQuery( '#di-google-maps-zoom' ).val() ),
 		'ubc_di_google_maps_right_lon': escapeHTML( jQuery( '#di-google-maps-right-lon' ).val() ),
 		'ubc_di_google_maps_layer1_label': escapeHTML( jQuery( '#di-google-maps-layer1-label' ).val() ),
 		'ubc_di_google_maps_layer1_file': escapeHTML( jQuery( '#di-google-maps-layer1-file' ).val() ),
@@ -53,9 +53,7 @@ function updateOptions() {
 		'ubc_di_google_maps_layer3_label': escapeHTML( jQuery( '#di-google-maps-layer3-label' ).val() ),
 		'ubc_di_google_maps_layer3_file': escapeHTML( jQuery( '#di-google-maps-layer3-file' ).val() ),
 		'ubc_di_google_maps_layer4_label': escapeHTML( jQuery( '#di-google-maps-layer4-label' ).val() ),
-		'ubc_di_google_maps_layer4_file': escapeHTML( jQuery( '#di-google-maps-layer4-file' ).val() ),
-		'ubc_di_google_maps_layer5_label': escapeHTML( jQuery( '#di-google-maps-layer5-label' ).val() ),
-		'ubc_di_google_maps_layer5_file': escapeHTML( jQuery( '#di-google-maps-layer5-file' ).val() ),
+		'ubc_di_google_maps_layer4_file': escapeHTML( jQuery( '#di-google-maps-layer4-file' ).val() )
 	};
 	jQuery.post( ajax_object.ajax_url, data, function( response ) {
 		alert( response );

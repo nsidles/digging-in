@@ -10,9 +10,9 @@ jQuery( document ).ready(function( $ ) {
 	var requestedLatlng, mapOptions, map, marker, data;
 
 	// Instantiating a new Google Maps LatLng location object and setting map options.
-	requestedLatlng = new google.maps.LatLng( 49.2683366, -123.2050359 );
+	requestedLatlng = new google.maps.LatLng( parseFloat( jQuery( '#di-bounding-box' ).attr( 'centerlat' ) ), parseFloat( jQuery( '#di-bounding-box' ).attr( 'centerlon' ) ) );
 	mapOptions = {
-		zoom: 11,
+		zoom: parseInt( jQuery( '#di-bounding-box' ).attr( 'zoom' ) ),
 		center: requestedLatlng,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
@@ -28,6 +28,7 @@ jQuery( document ).ready(function( $ ) {
 		site.classList.add( 'mobile-site' );
 	} else {
 		var sites = diMap.retrievePoints();
+		diMap.displayLayers( map );
 	}
 	diMap.enableButtons();
 
@@ -204,6 +205,11 @@ function DIMap( map ) {
 
 		jQuery( '#di-assessment-body' ).html( '' );
 		jQuery( '#di-assessment-footer' ).html( '' );
+
+		if( jQuery( '#di-user-id' ).html() == 0 ) {
+			var warning = createGeneralElement( 'p', '', 'Warning: you are not logged in. You will not be able to submit your results or save images.' );
+			slideBody.appendChild( warning );
+		}
 
 		var title = createGeneralElement( 'div', 'di-as-title', slideObject.title );
 		slideBody.appendChild( title );
@@ -508,7 +514,11 @@ function DIMap( map ) {
 
 		if( slideObject.final == 'checked' ) {
 			var bodyFinal = createGeneralElement( 'div', [ 'di-as-element', 'di-as-final' ] );
-			var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-submit' ], 'Review and Submit' );
+			if( jQuery( '#di-user-id' ).html() > 0 ) {
+				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-submit' ], 'Review and Submit' );
+			} else {
+				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-no-button' ], 'Log in to be able to submit answers.' );
+			}
 			bodyFinal.appendChild( bodyFinalButton );
 			slideBody.appendChild( bodyFinal );
 		}
@@ -537,8 +547,12 @@ function DIMap( map ) {
 		firstButton.setAttribute( 'id', 'di-as-button-slide-link-first' );
 		footer.appendChild( firstButton );
 
-		var submitButton = createGeneralElement( 'div', 'di-as-button', 'Submit' );
-		submitButton.setAttribute( 'id', 'di-assessment-submit' );
+		if( jQuery( '#di-user-id' ).html() > 0 ) {
+			var submitButton = createGeneralElement( 'div', 'di-as-button', 'Submit' );
+			submitButton.setAttribute( 'id', 'di-assessment-submit' );
+		} else {
+			var submitButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-no-button' ], 'Log in to be able to submit answers.' );
+		}
 		footer.appendChild( submitButton );
 
 		var body = document.getElementById( 'di-reviewer-body' );
@@ -726,6 +740,99 @@ function DIMap( map ) {
 					});
 		}
 	};
+
+	/**
+	 * Function to add KML display layers to the map. Uses the layer options
+	 * defined in class-ubc-di-admin.php.
+	 *
+	 */
+	this.displayLayers = function( map ) {
+
+		var kmlLayer_1 = new google.maps.KmlLayer( {
+			url: jQuery( '#di-layer-1' ).attr( 'file' ) + '?rand=' + (new Date()).valueOf(),
+			preserveViewport: true
+		} );
+
+		var kmlLayer_2 = new google.maps.KmlLayer( {
+			url: jQuery( '#di-layer-2' ).attr( 'file' ) + '?rand='+(new Date()).valueOf(),
+			preserveViewport: true
+		} );
+
+		var kmlLayer_3 = new google.maps.KmlLayer({
+			url: jQuery( '#di-layer-3' ).attr( 'file' ) + '?rand='+(new Date()).valueOf(),
+			preserveViewport: true
+		});
+
+		var kmlLayer_4 = new google.maps.KmlLayer({
+			url: jQuery( '#di-layer-4' ).attr( 'file' ) + '?rand='+(new Date()).valueOf(),
+			preserveViewport: true
+		});
+
+		var kmlClick_1 = document.getElementById( 'map-control-1' );
+		var kmlClick_2 = document.getElementById( 'map-control-2' );
+		var kmlClick_3 = document.getElementById( 'map-control-3' );
+		var kmlClick_4 = document.getElementById( 'map-control-4' );
+
+		var kmlLayer_1Status = 1;
+		var kmlLayer_2Status = 1;
+		var kmlLayer_3Status = 1;
+		var kmlLayer_4Status = 1;
+
+		kmlLayer_1.setMap(map);
+		kmlLayer_2.setMap(map);
+		kmlLayer_3.setMap(map);
+		kmlLayer_4.setMap(map);
+
+		kmlClick_1.onclick= function(){
+		    if(kmlLayer_1Status == 1) {
+		       kmlLayer_1.setMap();
+		        kmlLayer_1Status = 0;
+		        document.getElementById("label1").style.backgroundColor = "#f7f7f7";
+		    } else{
+		        kmlLayer_1.setMap(map);
+		        kmlLayer_1Status = 1;
+		        document.getElementById("label1").style.backgroundColor = "#e4d8f4";
+		    }
+		};
+
+
+		kmlClick_2.onclick= function(){
+		    if(kmlLayer_2Status == 1) {
+		        kmlLayer_2.setMap();
+		        kmlLayer_2Status = 0;
+		        document.getElementById("label2").style.backgroundColor = "#f7f7f7";
+		    } else if(kmlLayer_2Status == 0){
+		        kmlLayer_2.setMap(map);
+		        kmlLayer_2Status = 1;
+		        document.getElementById("label2").style.backgroundColor = "#cbdce8";
+		    }
+		};
+
+		kmlClick_3.onclick= function(){
+		    if(kmlLayer_3Status == 1) {
+		        kmlLayer_3.setMap();
+		        kmlLayer_3Status = 0;
+		        document.getElementById("label3").style.backgroundColor = "#f7f7f7";
+		    } else if(kmlLayer_3Status == 0){
+		        kmlLayer_3.setMap(map);
+		        kmlLayer_3Status = 1;
+		        document.getElementById("label3").style.backgroundColor = "#f0d5d4";
+		    }
+		};
+
+		kmlClick_4.onclick= function(){
+		    if(kmlLayer_4Status == 1) {
+		        kmlLayer_4.setMap();
+		        kmlLayer_4Status = 0;
+		        document.getElementById("label4").style.backgroundColor = "#f7f7f7";
+		    } else if(kmlLayer_4Status == 0){
+		        kmlLayer_4.setMap(map);
+		        kmlLayer_4Status = 1;
+		        document.getElementById("label4").style.backgroundColor = "#deeccf";
+		    }
+		};
+
+	}
 
 }
 

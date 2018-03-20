@@ -97,22 +97,50 @@ class UBC_DI_View {
 			<div id="di-user" class="hidden"><?php echo esc_html( wp_get_current_user()->user_login ); ?></div>
 			<div id="di-user-id" class="hidden"><?php echo esc_html( wp_get_current_user()->ID ); ?></div>
 			<div id="di-site-id" class="hidden"><?php echo ( isset( $_GET['ubc_di_point_view'] ) && '' !== $_GET['ubc_di_point_view'] ) ? esc_html( sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) ) ) : ''; ?></div>
+			<div id="di-layer-1" class="hidden" file="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer1_file' ) ); ?>" label="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer1_label' ) ); ?>"></div>
+			<div id="di-layer-2" class="hidden" file="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer2_file' ) ); ?>" label="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer2_label' ) ); ?>"></div>
+			<div id="di-layer-3" class="hidden" file="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer3_file' ) ); ?>" label="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer3_label' ) ); ?>"></div>
+			<div id="di-layer-4" class="hidden" file="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer4_file' ) ); ?>" label="<?php echo esc_html( get_option( 'ubc_di_google_maps_layer4_label' ) ); ?>"></div>
+			<div id="di-bounding-box" class="hidden" centerlat="<?php echo esc_attr( get_option( 'ubc_di_google_maps_center_lat' ) ); ?>" centerlon="<?php echo esc_attr( get_option( 'ubc_di_google_maps_center_lon' ) ); ?>" zoom="<?php echo esc_attr( get_option( 'ubc_di_google_maps_zoom' ) ); ?>" ></div>
 			<div id="di-assessment-id" class="hidden"></div>
 			<div id="di-assessment-slide-id" class="hidden"></div>
 			<div id="di-content">
 				<div id="di-map">
 					<div id="di-map-control">
 						<span id="filter">Filter By:</span>
-						<label id="label1"><input type="checkbox" id="map-control-1" checked> Delta-Tsawwassen</label>
-						<label id="label2"><input type="checkbox" id="map-control-2" checked> Bose-Heron</label>
-						<label id="label3"><input type="checkbox" id="map-control-3" checked> Langley-Cloverdale</label>
-						<label id="label4"><input type="checkbox" id="map-control-4" checked> Whatcom-Scat</label>
+						<div id="map-control-left">
+							<label id="label1"><input type="checkbox" id="map-control-1" checked><?php echo esc_html( get_option( 'ubc_di_google_maps_layer1_label' ) ); ?></label>
+							<label id="label2"><input type="checkbox" id="map-control-2" checked><?php echo esc_html( get_option( 'ubc_di_google_maps_layer2_label' ) ); ?></label>
+						</div>
+						<div id="map-control-right">
+							<label id="label3"><input type="checkbox" id="map-control-3" checked><?php echo esc_html( get_option( 'ubc_di_google_maps_layer3_label' ) ); ?></label>
+							<label id="label4"><input type="checkbox" id="map-control-4" checked><?php echo esc_html( get_option( 'ubc_di_google_maps_layer4_label' ) ); ?></label>
+						</div>
 						<div id="di-map-canvas">
 						</div>
 					</div>
 				</div>
 				<div id="di-site">
-					<div class="main-left"></div>
+					<div class="main-left">
+						<p>Welcome to Digging In!</p>
+						<p>Digging In is a soil teaching tool. It allows people to get information on soil sites around their community, as well as take assessments to learn more about those sites.</p>
+						<p>Click on a soil site to learn more!</p>
+						<p>Log in to get started taking assessments!</p>
+						<hr />
+					</div>
+					<div class="main-login">
+						<?php
+						if ( isset( $_SERVER['SERVER_NAME'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
+							$redirect_string = 'http' . ( empty( $_SERVER['HTTPS'] ) ? '' : 's' ) . '://' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+							if ( isset( $_GET['ubc_di_point_view'] ) ) {
+								$redirect_string .= '&point=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
+							}
+							echo '<div id="di-header-loginout" class="di-as-button">';
+							echo wp_loginout( $redirect_string, true );
+							echo '</div>';
+						}
+						?>
+					</div>
 					<div class="main-right"></div>
 				</div>
 			</div>
@@ -147,7 +175,7 @@ class UBC_DI_View {
 					</div>
 				</div>
 			</div>
-		<?php
+			<?php
 	}
 
 	/**
