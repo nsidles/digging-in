@@ -492,6 +492,7 @@ class UBC_DI_View {
 
 			foreach ( $ubc_di_groups as $ubc_di_group ) {
 				$ubc_di_group_students = get_post_meta( $ubc_di_group->ID, 'ubc_di_group_people', true );
+				$in_group = false;
 				foreach ( $ubc_di_group_students as $ubc_di_group_student ) {
 					if ( isset( $_POST['ubc_di_assessment_result_title'] ) && isset( $_POST['ubc_di_assessment_result_user'] ) && isset( $_POST['ubc_di_assessment_result_data'] ) && isset( $_POST['ubc_di_assessment_result_site'] ) && isset( $_POST['ubc_di_assessment_result_assessment'] ) ) {
 						$ubc_di_assessment_result_title = sanitize_text_field( wp_unslash( $_POST['ubc_di_assessment_result_title'] ) );
@@ -501,6 +502,7 @@ class UBC_DI_View {
 						$ubc_di_assessment_result_assessment = sanitize_text_field( wp_unslash( $_POST['ubc_di_assessment_result_assessment'] ) );
 
 						if ( $ubc_di_group_student === $_POST['ubc_di_assessment_result_user'] ) {
+							$in_group = true;
 							$ubc_di_assessment_result_post = array(
 								'post_title' => sanitize_text_field( $ubc_di_assessment_result_title ),
 								'post_author' => sanitize_text_field( $ubc_di_assessment_result_user ),
@@ -521,7 +523,11 @@ class UBC_DI_View {
 					}
 				}
 			}
-			echo 'Assessment submitted! (ID# ' . esc_html( $ubc_di_assessment_result_id ) . ')';
+			if ( $in_group === true ) {
+				echo 'Assessment submitted! (ID# ' . esc_html( $ubc_di_assessment_result_id ) . ')';
+			} else {
+				echo 'Assessment not submitted. User must be part of user group.';
+			}
 		}
 		die();
 	}

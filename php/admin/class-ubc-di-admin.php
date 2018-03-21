@@ -116,7 +116,8 @@ class UBC_DI_Admin {
 	 * @return void
 	 */
 	public function add_menu_pages() {
-		if ( ! current_user_can( 'edit_pages' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			add_menu_page( 'Digging In', 'Digging In', 'read', 'di-assessment-results', array( $this->ubc_di_admin_results, 'add_menu_page' ) );
 		} else {
 			add_menu_page( 'Digging In', 'Digging In', 'manage_options', 'di', array( $this, 'add_menu_page' ) );
 			add_submenu_page( 'di', 'Soil Sites', 'Soil Sites', 'manage_options', 'di-sites', array( $this->ubc_di_admin_sites, 'add_menu_page' ) );
