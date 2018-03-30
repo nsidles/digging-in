@@ -130,14 +130,24 @@ class UBC_DI_View {
 					</div>
 					<div class="main-login">
 						<?php
-						if ( isset( $_SERVER['SERVER_NAME'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
-							$redirect_string = 'http' . ( empty( $_SERVER['HTTPS'] ) ? '' : 's' ) . '://' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+						if ( get_option( 'ubc_di_login_redirect' ) !== '' ) {
+							$redirect_string = get_option( 'ubc_di_login_redirect' );
 							if ( isset( $_GET['ubc_di_point_view'] ) ) {
 								$redirect_string .= '&point=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
 							}
 							echo '<div id="di-header-loginout" class="di-as-button">';
 							echo wp_loginout( $redirect_string, true );
 							echo '</div>';
+						} else {
+							if ( isset( $_SERVER['SERVER_NAME'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
+								$redirect_string = 'http' . ( empty( $_SERVER['HTTPS'] ) ? '' : 's' ) . '://' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+								if ( isset( $_GET['ubc_di_point_view'] ) ) {
+									$redirect_string .= '&point=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
+								}
+								echo '<div id="di-header-loginout" class="di-as-button">';
+								echo wp_loginout( $redirect_string, true );
+								echo '</div>';
+							}
 						}
 						?>
 					</div>
@@ -523,7 +533,7 @@ class UBC_DI_View {
 					}
 				}
 			}
-			if ( $in_group === true ) {
+			if ( true === $in_group ) {
 				echo 'Assessment submitted! (ID# ' . esc_html( $ubc_di_assessment_result_id ) . ')';
 			} else {
 				echo 'Assessment not submitted. User must be part of user group.';

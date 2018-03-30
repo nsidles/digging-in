@@ -41,6 +41,7 @@ function updateOptions() {
 	data = {
 		'action': 'options_updater',
 		'ubc_di_nonce_field': escapeHTML( jQuery( '#di-nonce-field' ).val() ),
+		'ubc_di_login_redirect': escapeHTML( jQuery( '#di-login-redirect' ).val() ),
 		'ubc_di_google_maps_api_key': escapeHTML( jQuery( '#di-google-maps-api-key' ).val() ),
 		'ubc_di_google_maps_center_lat': escapeHTML( jQuery( '#di-google-maps-center-lat' ).val() ),
 		'ubc_di_google_maps_center_lon': escapeHTML( jQuery( '#di-google-maps-center-lon' ).val() ),

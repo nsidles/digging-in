@@ -143,6 +143,9 @@ class UBC_DI_Admin {
 		wp_localize_script( 'ubc_di_control_panel_updater_script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 		?>
 			<h2>Digging In Settings</h2>
+			<h3>Login Redirect</h3>
+			<p>This setting sets the login URL to which users are redirect on login. It should be the same as the page on which Digging In is embedded.</p>
+			<?php echo '<input name="di-app-login" type="text" id="di-login-redirect" value="' . esc_attr( get_option( 'ubc_di_login_redirect' ) ) . '" class="regular-text ltr" />'; ?>
 			<h3>Google Maps</h3>
 			<h4>Google Maps API Key</h3>
 			<p>This setting sets the API key that allows you to use Google maps to display soil sites.</p>
@@ -186,6 +189,9 @@ class UBC_DI_Admin {
 				echo 'Sorry, WordPress has rejected your submission - specifically, your nonce did not verify. Please reload the form page and try again. This message may occur if you took more than a day to complete your form, if you do not have the appropriate privileges to submit soil groups but nonetheless try, or if the Digging In coding team made an error.';
 				die();
 			} else {
+				if ( isset( $_POST['ubc_di_login_redirect'] ) ) {
+					update_option( 'ubc_di_login_redirect', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_login_redirect'] ) ) ) );
+				}
 				if ( isset( $_POST['ubc_di_google_maps_api_key'] ) ) {
 					update_option( 'ubc_di_google_maps_api_key', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_api_key'] ) ) ) );
 				}
