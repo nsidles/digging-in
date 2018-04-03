@@ -133,7 +133,7 @@ class UBC_DI_View {
 						if ( get_option( 'ubc_di_login_redirect' ) !== '' ) {
 							$redirect_string = get_option( 'ubc_di_login_redirect' );
 							if ( isset( $_GET['ubc_di_point_view'] ) ) {
-								$redirect_string .= '&point=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
+								$redirect_string .= '?ubc_di_point_view=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
 							}
 							echo '<div id="di-header-loginout" class="di-as-button">';
 							echo wp_loginout( $redirect_string, true );
@@ -142,7 +142,7 @@ class UBC_DI_View {
 							if ( isset( $_SERVER['SERVER_NAME'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
 								$redirect_string = 'http' . ( empty( $_SERVER['HTTPS'] ) ? '' : 's' ) . '://' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 								if ( isset( $_GET['ubc_di_point_view'] ) ) {
-									$redirect_string .= '&point=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
+									$redirect_string .= '&ubc_di_point_view=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
 								}
 								echo '<div id="di-header-loginout" class="di-as-button">';
 								echo wp_loginout( $redirect_string, true );
