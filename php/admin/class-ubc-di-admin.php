@@ -145,7 +145,7 @@ class UBC_DI_Admin {
 			<h2>Digging In Settings</h2>
 			<h3>Login Redirect</h3>
 			<p>This setting sets the login URL to which users are redirect on login. It should be the same as the page on which Digging In is embedded.</p>
-			<?php echo '<input name="di-app-login" type="text" id="di-login-redirect" value="' . esc_attr( get_option( 'ubc_di_login_redirect' ) ) . '" class="regular-text ltr" />'; ?>
+			<?php echo '<input name="di-app-" type="text" id="di-login-redirect" value="' . esc_url_raw( get_option( 'ubc_di_login_redirect' ) ) . '" class="regular-text ltr" />'; ?>
 			<h3>Google Maps</h3>
 			<h4>Google Maps API Key</h3>
 			<p>This setting sets the API key that allows you to use Google maps to display soil sites.</p>
@@ -190,7 +190,7 @@ class UBC_DI_Admin {
 				die();
 			} else {
 				if ( isset( $_POST['ubc_di_login_redirect'] ) ) {
-					update_option( 'ubc_di_login_redirect', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_login_redirect'] ) ) ) );
+					update_option( 'ubc_di_login_redirect', esc_url_raw( sanitize_text_field( wp_unslash( $_POST['ubc_di_login_redirect'] ) ) ) );
 				}
 				if ( isset( $_POST['ubc_di_google_maps_api_key'] ) ) {
 					update_option( 'ubc_di_google_maps_api_key', esc_attr( sanitize_text_field( wp_unslash( $_POST['ubc_di_google_maps_api_key'] ) ) ) );

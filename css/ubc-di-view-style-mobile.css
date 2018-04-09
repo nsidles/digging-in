@@ -1,3 +1,11 @@
 .mobile-site {
 	position: relative;
 }
+
+#di-map {
+	display: none !important;
+}
+
+#site-navigation, #masthead, #secondary {
+	display: none !important;
+}

@@ -35,7 +35,7 @@ class UBC_DI_View {
 	}
 
 	/**
-	 * This function adds the UBC_DI_View actions,including its AJAX
+	 * This function adds the UBC_DI_View actions, including its AJAX
 	 * callback hooks and upload detection hooks for both logged in and logged out
 	 * users.
 	 *
@@ -51,6 +51,7 @@ class UBC_DI_View {
 		add_action( 'wp_ajax_nopriv_digging_in_get_assessment', array( $this, 'ubc_di_map_assessment_callback' ) );
 		add_action( 'wp_ajax_digging_in_add_assessment_result', array( $this, 'ubc_di_map_add_assessment_result_callback' ) );
 		add_action( 'wp_ajax_digging_in_upload_image', array( $this, 'ubc_di_map_upload_image_callback' ) );
+		add_action( 'parse_request', array( $this, 'parse_request' ) );
 	}
 
 	/**
@@ -78,6 +79,29 @@ class UBC_DI_View {
 		if ( '' != isset( $_GET['ubc_di_point_view'] ) && sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) ) ) {
 			wp_register_style( 'ubc_di_view_style-mobile', plugins_url( 'css/ubc-di-view-style-mobile.css', dirname( dirname( __FILE__ ) ) ) );
 			wp_enqueue_style( 'ubc_di_view_style-mobile' );
+		}
+	}
+
+	/**
+	 * This function sets the behavior to be performed if a Digging In cookie is found for a particular soil site.
+	 *
+	 * @param object $wp
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function parse_request() {
+		if ( isset( $_COOKIE['ubc_di_point_view'] ) ) {
+			$site_id = intval( sanitize_text_field( wp_unslash( $_COOKIE['ubc_di_point_view'] ) ) );
+			$redirect_string = get_option( 'ubc_di_login_redirect' ) . '&ubc_di_point_view=' . $site_id;
+			setcookie( 'ubc_di_point_view', 0, 1 );
+			header( 'Location:' . $redirect_string );
+			die();
+		}
+		if ( isset( $_GET['ubc_di_point_view'] ) ) {
+			setcookie( 'ubc_di_point_view', esc_html( sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) ) ) );
+		} else {
+			setcookie( 'ubc_di_point_view', 0, 1 );
 		}
 	}
 
@@ -132,9 +156,6 @@ class UBC_DI_View {
 						<?php
 						if ( get_option( 'ubc_di_login_redirect' ) !== '' ) {
 							$redirect_string = get_option( 'ubc_di_login_redirect' );
-							if ( isset( $_GET['ubc_di_point_view'] ) ) {
-								$redirect_string .= '?ubc_di_point_view=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
-							}
 							echo '<div id="di-header-loginout" class="di-as-button">';
 							echo wp_loginout( $redirect_string, true );
 							echo '</div>';
