@@ -149,7 +149,7 @@ class UBC_DI_View {
 						<p>Welcome to Digging In!</p>
 						<p>Digging In is a soil teaching tool. It allows people to get information on soil sites around their community, as well as take assessments to learn more about those sites.</p>
 						<p>Click on a soil site to learn more!</p>
-						<p>Log in to get started taking assessments!</p>
+						<p>Log in to get started taking assessments.</p>
 						<hr />
 					</div>
 					<div class="main-login">
@@ -163,7 +163,7 @@ class UBC_DI_View {
 							if ( isset( $_SERVER['SERVER_NAME'] ) && isset( $_SERVER['REQUEST_URI'] ) ) {
 								$redirect_string = 'http' . ( empty( $_SERVER['HTTPS'] ) ? '' : 's' ) . '://' . sanitize_text_field( wp_unslash( $_SERVER['SERVER_NAME'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 								if ( isset( $_GET['ubc_di_point_view'] ) ) {
-									$redirect_string .= '&ubc_di_point_view=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
+									$redirect_string .= '?ubc_di_point_view=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
 								}
 								echo '<div id="di-header-loginout" class="di-as-button">';
 								echo wp_loginout( $redirect_string, true );
