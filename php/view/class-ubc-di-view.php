@@ -93,7 +93,7 @@ class UBC_DI_View {
 	function parse_request() {
 		if ( isset( $_COOKIE['ubc_di_point_view'] ) ) {
 			$site_id = intval( sanitize_text_field( wp_unslash( $_COOKIE['ubc_di_point_view'] ) ) );
-			$redirect_string = get_option( 'ubc_di_login_redirect' ) . '&ubc_di_point_view=' . $site_id;
+			$redirect_string = get_option( 'ubc_di_login_redirect' ) . '?ubc_di_point_view=' . $site_id;
 			setcookie( 'ubc_di_point_view', 0, 1 );
 			header( 'Location:' . $redirect_string );
 			die();
