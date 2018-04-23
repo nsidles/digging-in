@@ -147,7 +147,7 @@ class UBC_DI_View {
 					<div class="main-left">
 						<p>Welcome to Digging In!</p>
 						<p>Digging In is a soil teaching tool. It allows people to get information on soil sites around their community, as well as take assessments to learn more about those sites.</p>
-						<p>Click on a soil site to learn more!</p>
+						<p>Click on a soil site to learn more.</p>
 						<p>Log in to get started taking assessments.</p>
 						<hr />
 					</div>
