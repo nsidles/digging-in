@@ -91,17 +91,16 @@ class UBC_DI_View {
 	 * @return void
 	 */
 	function parse_request() {
-		if ( isset( $_COOKIE['ubc_di_point_view'] ) ) {
-			$site_id = intval( sanitize_text_field( wp_unslash( $_COOKIE['ubc_di_point_view'] ) ) );
-			$redirect_string = get_option( 'ubc_di_login_redirect' ) . '?ubc_di_point_view=' . $site_id;
-			setcookie( 'ubc_di_point_view', 0, 1 );
-			header( 'Location:' . $redirect_string );
-			die();
-		}
-		if ( isset( $_GET['ubc_di_point_view'] ) ) {
-			setcookie( 'ubc_di_point_view', esc_html( sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) ) ) );
-		} else {
-			setcookie( 'ubc_di_point_view', 0, 1 );
+		if ( isset( $_COOKIE['ubc_di_point_view'] ) && ! isset( $_GET['ubc_di_point_view'] ) && '' !== $_COOKIE['ubc_di_point_view'] ) {
+			$ubc_di_point_view = sanitize_text_field( wp_unslash( $_COOKIE['ubc_di_point_view'] ) );
+			$redirect_string = get_option( 'ubc_di_login_redirect' );
+			$redirect_string .= $ubc_di_point_view;
+			?>
+				<script>
+					document.cookie = 'ubc_di_point_view' + "=" + "; path=/";
+					window.location.replace( "<?php echo esc_url_raw( $redirect_string ); ?>" );
+				</script>
+			<?php
 		}
 	}
 
@@ -155,7 +154,7 @@ class UBC_DI_View {
 					<div class="main-login">
 						<?php
 						if ( get_option( 'ubc_di_login_redirect' ) !== '' ) {
-							$redirect_string = get_option( 'ubc_di_login_redirect' );
+							$redirect_string = get_home_url();
 							echo '<div id="di-header-loginout" class="di-as-button">';
 							echo wp_loginout( $redirect_string, true );
 							echo '</div>';

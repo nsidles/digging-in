@@ -32,6 +32,11 @@ jQuery( document ).ready(function( $ ) {
 	}
 	diMap.enableButtons();
 
+	document.getElementById( 'di-header-loginout' ).addEventListener( 'click', function( event ) {
+		var siteID = jQuery( '#di-site-id' ).html();
+		setCookie( 'ubc_di_point_view', siteID, '' );
+	});
+
 });
 
 /**
@@ -868,21 +873,63 @@ function DIMap( map ) {
  * @param {String} dataURI - image string to convert to blob
  * @return {Object} Blob - image object to return
  */
-function dataURItoBlob(dataURI) {
+function dataURItoBlob( dataURI ) {
 		// convert base64/URLEncoded data component to raw binary data held in a string
 		var byteString;
-		if (dataURI.split(',')[0].indexOf('base64') >= 0)
+		if ( dataURI.split( ',' )[0].indexOf('base64' ) >= 0 )
 				byteString = atob(dataURI.split(',')[1]);
 		else
 				byteString = unescape(dataURI.split(',')[1]);
 
 		// separate out the mime component
-		var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+		var mimeString = dataURI.split( ',' )[0].split( ':' )[1].split( ';' )[0];
 		// write the bytes of the string to a typed array
-		var ia = new Uint8Array(byteString.length);
-		for (var i = 0; i < byteString.length; i++) {
-				ia[i] = byteString.charCodeAt(i);
+		var ia = new Uint8Array( byteString.length );
+		for ( var i = 0; i < byteString.length; i++ ) {
+				ia[i] = byteString.charCodeAt( i );
 		}
 
-		return new Blob([ia], {ext:mimeString, type:mimeString} );
+		return new Blob( [ia], { ext:mimeString, type:mimeString } );
+}
+
+/**
+ * Sets a cookie with a specified name, value, and expiry date.
+ *
+ * @param {String} name - name of cookie
+ * @param {String} value - value inside cookie
+ * @param {String} days - days until the cookie expires
+ */
+function setCookie( name, value, days ) {
+    var expires = '';
+    if ( days ) {
+        var date = new Date();
+        date.setTime( date.getTime() + ( days * 24 * 60 * 60 * 1000 ) );
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + '=' + ( value || '' )  + expires + '; path=/';
+}
+
+/**
+ * Get a cookie with a specified name.
+ *
+ * @param {String} name - name of cookie
+ */
+function getCookie( name ) {
+    var nameEQ = name + '=';
+    var ca = document.cookie.split( ';' );
+    for( var i=0; i < ca.length; i++ ) {
+        var c = ca[i];
+        while ( c.charAt( 0 )== ' ' ) c = c.substring( 1,c.length );
+        if ( c.indexOf( nameEQ ) == 0 ) return c.substring( nameEQ.length, c.length );
+    }
+    return null;
+}
+
+/**
+ * Deletes a cookie with a specified name.
+ *
+ * @param {String} name - name of cookie
+ */
+function eraseCookie( name ) {
+    document.cookie = name + '=; Max-Age=-99999999;';
 }
