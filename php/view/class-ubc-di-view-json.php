@@ -81,6 +81,7 @@ class UBC_DI_View_JSON {
 		$ubc_di_points = array();
 		$all_ubc_di_points[] = get_posts( $args );
 		foreach ( $all_ubc_di_points as $temp_point ) {
+			$temp_point = $temp_point[0];
 			$temp_inner_array                = array();
 			$temp_inner_array['id']          = $temp_point->ID;
 			$temp_inner_array['longitude']   = get_post_meta( $temp_point->ID, 'ubc_di_site_longitude', true );
