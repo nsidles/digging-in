@@ -393,7 +393,6 @@ textarea{
     background-color: #ffffff;
     height: 89%;
     position: absolute;
-    top: 80px;
     width: 100%;
     display: table;
 }
@@ -604,7 +603,7 @@ a {
 }
 #di-map-canvas {
     border-radius: 0 !important;
-    height: 100% !important;
+    height: 100% !important; /* xxx */
     margin-top: 10px !important;
     border-top: 1px solid #D4DBE2;
 }

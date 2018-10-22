@@ -154,7 +154,10 @@ class UBC_DI_View {
 					<div class="main-login">
 						<?php
 						if ( get_option( 'ubc_di_login_redirect' ) !== '' ) {
-							$redirect_string = get_home_url();
+							$redirect_string = get_option( 'ubc_di_login_redirect' );
+							if( isset( $_GET['ubc_di_point_view'] ) ) {
+								$redirect_string .= '?ubc_di_point_view=' . sanitize_text_field( wp_unslash( $_GET['ubc_di_point_view'] ) );
+							}
 							echo '<div id="di-header-loginout" class="di-as-button">';
 							echo wp_loginout( $redirect_string, true );
 							echo '</div>';
