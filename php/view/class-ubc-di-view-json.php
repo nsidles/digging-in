@@ -75,13 +75,12 @@ class UBC_DI_View_JSON {
 	 */
 	function ubc_di_retrieve_sites() {
 		$args         = array(
-			'posts_per_page' => -1,
+			'posts_per_page' => -10,
 			'post_type'      => 'ubc_di_site',
 		);
 		$ubc_di_points = array();
-		$all_ubc_di_points[] = get_posts( $args );
+		$all_ubc_di_points = get_posts( $args );
 		foreach ( $all_ubc_di_points as $temp_point ) {
-			$temp_point = $temp_point[0];
 			$temp_inner_array                = array();
 			$temp_inner_array['id']          = $temp_point->ID;
 			$temp_inner_array['longitude']   = get_post_meta( $temp_point->ID, 'ubc_di_site_longitude', true );
@@ -103,9 +102,9 @@ class UBC_DI_View_JSON {
 						}
 					}
 				}
-					$temp_inner_array['media'] = $temp_media;
+				$temp_inner_array['media'] = $temp_media;
 			}
-				array_push( $ubc_di_points, $temp_inner_array );
+			array_push( $ubc_di_points, $temp_inner_array );
 		}
 		return $ubc_di_points;
 	}

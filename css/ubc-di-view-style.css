@@ -60,7 +60,6 @@ html {
 	border: 2px solid #DDD;
 	overflow: hidden;
 	padding: 60px;
-	padding-top: 120px;
 	box-sizing: border-box;
 }
 
@@ -311,6 +310,7 @@ textarea{
 }
 #di-assessment-body, #di-reviewer-body {
     padding: 0px !important;
+		padding-bottom: 120px !important;
     margin-top: 120px !important;
     margin-bottom: 20px !important;
 }
