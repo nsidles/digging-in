@@ -235,3 +235,7 @@
 .di-list-controller .button {
 	height: 30px !important;
 }
+
+.di-li-correct {
+	display: inline;
+}

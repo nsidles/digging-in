@@ -4,6 +4,7 @@
 var studentAnswers = {};
 var studentAnswersID = '';
 var assessment = {};
+var uploadImage = false;
 
 jQuery( document ).ready(function( $ ) {
 	// Creating variables used in creating the Google Maps element used to retrieve soil sites
@@ -97,7 +98,7 @@ function DIMap( map ) {
 			'ubc_di_nonce_field': jQuery( '#di-nonce-field' ).val()
 		};
 		jQuery.post( ubc_di_ajax_object.ajax_url, data, function( response ) {
-			console.log( response );
+
 			jQuery( '#di-site .main-left' ).html( '' );
 			jQuery( '#di-site .main-right' ).html( '' );
 
@@ -142,7 +143,7 @@ function DIMap( map ) {
 			'ubc_di_nonce_field': jQuery( '#di-nonce-field' ).val(),
 		};
 		jQuery.post( ubc_di_ajax_object.ajax_url, data, function( response ) {
-				console.log( response );
+
 				assessment = response.data;
 
 				if( response.group !== '' ) {
@@ -226,13 +227,13 @@ function DIMap( map ) {
     var question, answer;
 
 		if( slideObject.multipleChoiceQuestion !== '' ) {
-			var bodyMultipleChoice = createGeneralElement( 'div', 'di-as-element', 'Multiple Choice Question (Unrecorded)' );
+			var bodyMultipleChoice = createGeneralElement( 'div', 'di-as-element' );
 			question = createGeneralElement( 'div', 'di-as-question', slideObject.multipleChoiceQuestion );
 			bodyMultipleChoice.appendChild( question );
 			for( var i in slideObject.multipleChoiceAnswers ) {
 				if( slideObject.multipleChoiceAnswers.hasOwnProperty( i ) ) {
 					answer = createGeneralElement( 'div', 'di-as-multiple-choice-answer', slideObject.multipleChoiceAnswers[i].text );
-					if( slideObject.multipleChoiceAnswers[i].correct === true ) {
+					if( slideObject.multipleChoiceAnswers[i].correct === 'true' ) {
 						var correct = createGeneralElement( 'div', 'di-li-correct', ' (correct)' );
 						answer.appendChild( correct );
 						answer.classList.add( 'di-as-multiple-choice-correct' );
@@ -246,7 +247,7 @@ function DIMap( map ) {
 		}
 
 		if( slideObject.recordedMultipleChoiceQuestion !== '' ) {
-			var bodyRecordedMultipleChoice = createGeneralElement( 'div', 'di-as-element', 'Recorded Multiple Choice Question' );
+			var bodyRecordedMultipleChoice = createGeneralElement( 'div', 'di-as-element' );
 			question = createGeneralElement( 'div', [ 'di-as-element', 'di-as-question' ], slideObject.recordedMultipleChoiceQuestion );
 			bodyRecordedMultipleChoice.appendChild( question );
 			for( var h in slideObject.recordedMultipleChoiceAnswers ) {
@@ -266,7 +267,7 @@ function DIMap( map ) {
 		}
 
 		if( slideObject.textBoxQuestion !== '' ) {
-			var bodyTextBoxQuestion = createGeneralElement( 'div', 'di-as-element', 'Text Question' );
+			var bodyTextBoxQuestion = createGeneralElement( 'div', 'di-as-element' );
 			question = createGeneralElement( 'div', 'di-as-question', slideObject.textBoxQuestion );
 			answer = createGeneralElement( 'textarea', 'di-as-answer' );
 			answer.setAttribute( 'id', 'di-as-text-answer' );
@@ -280,7 +281,7 @@ function DIMap( map ) {
 		}
 
 		if( slideObject.imageBoxQuestion !== '' ) {
-			var bodyImageBoxQuestion = createGeneralElement( 'div', [ 'di-as-element', 'di-as-question' ], 'Image Question' );
+			var bodyImageBoxQuestion = createGeneralElement( 'div', [ 'di-as-element', 'di-as-question' ] );
 			question = createGeneralElement( 'div', 'di-as-question', slideObject.imageBoxQuestion );
 			answer = createGeneralElement( 'div' );
 
@@ -368,6 +369,7 @@ function DIMap( map ) {
 			 * @param {Object} e - event data.
 			 */
 			var imageIsLoaded = function( e ) {
+				uploadImage = true;
 				var canvas = document.getElementById("canvas");
     		var ctx = canvas.getContext("2d");
 				var lastX;
@@ -390,7 +392,7 @@ function DIMap( map ) {
 		    imageObj.onload=function(){
 						ctx.clearRect(0, 0, 500, 500);
 		        ctx.save();
-		        ctx.globalAlpha= '.3';
+		        ctx.globalAlpha= '.9';
 		        ctx.drawImage(this,0,0,canvas.width,canvas.height);
 		        ctx.restore();
 		    };
@@ -447,7 +449,7 @@ function DIMap( map ) {
 		      if(isMouseDown){
 		          ctx.beginPath();
 		          ctx.lineWidth=5;
-		          ctx.strokeStyle="#FF0000";
+		          ctx.strokeStyle="#ffa500";
 		          ctx.moveTo(lastX,lastY);
 		          ctx.lineTo(canMouseX,canMouseY);
 		          ctx.stroke();
@@ -464,7 +466,7 @@ function DIMap( map ) {
 
 				// Event handlers to map touch behaviors to mouse behaviors
 				canvas.addEventListener("touchstart", function (e) {
-				        mousePos = getTouchPos(canvas, e);
+	        mousePos = getTouchPos(canvas, e);
 				  var touch = e.touches[0];
 				  var mouseEvent = new MouseEvent("mousedown", {
 				    clientX: touch.clientX,
@@ -520,7 +522,7 @@ function DIMap( map ) {
 		if( slideObject.final == 'checked' ) {
 			var bodyFinal = createGeneralElement( 'div', [ 'di-as-element', 'di-as-final' ] );
 			if( jQuery( '#di-user-id' ).html() > 0 ) {
-				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-submit' ], 'Review and Submit' );
+				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-submit' ], 'Review and submit your answers' );
 			} else {
 				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-no-button' ], 'Log in to be able to submit answers.' );
 			}
@@ -547,6 +549,8 @@ function DIMap( map ) {
 	 *
 	 */
 	this.displayReviewSlide = function() {
+		jQuery( '#di-reviewer-body' ).html( '' );
+		jQuery( '#di-reviewer-footer' ).html( '' );
 		var footer = document.getElementById( 'di-reviewer-footer' );
 		var firstButton = createGeneralElement( 'div', 'di-as-button', 'Go to First Slide' );
 		firstButton.setAttribute( 'id', 'di-as-button-slide-link-first' );
@@ -564,10 +568,25 @@ function DIMap( map ) {
 
 		for( var i in studentAnswers[assessmentID] ) {
 			if( studentAnswers[assessmentID].hasOwnProperty( i ) ) {
-				var header = createGeneralElement( 'h3', 'di-review-title', assessment[i].title );
-				body.appendChild( header );
 
 				if( studentAnswers[assessmentID][i].recordedMultipleChoice.question !== '' || studentAnswers[assessmentID][i].text.question !== '' || studentAnswers[assessmentID][i].image.question !== '' ) {
+
+					var header = createGeneralElement( 'h3', 'di-review-title', assessment[i].title + ' (tap to jump to this slide)' );
+					header.setAttribute( 'slide-id', i );
+					body.appendChild( header );
+
+					jQuery( header ).on( 'click', function( e ) {
+						var slide = this.getAttribute( 'slide-id' );
+						for( var j in assessment ) {
+							if( assessment.hasOwnProperty( j ) && j === slide ) {
+								jQuery( '#di-review' ).toggle();
+								jQuery( '#di-reviewer-body' ).html( '' );
+								jQuery( '#di-reviewer-footer' ).html( '' );
+								objectInstance.displaySlide( j );
+								break;
+							}
+						}
+					});
 
           var noAnswer;
 
@@ -608,12 +627,10 @@ function DIMap( map ) {
 						}
 					}
 
-				} else {
-					var noQuestions = createGeneralElement( 'p', '', 'No recorded questions in this slide.' );
-					body.appendChild( noQuestions );
+					var hr = createGeneralElement( 'hr', '' );
+					body.appendChild( hr );
+
 				}
-				var hr = createGeneralElement( 'hr', '' );
-				body.appendChild( hr );
 			}
 		}
 	};
@@ -724,7 +741,11 @@ function DIMap( map ) {
 			studentAnswers[currentAssessmentID][currentSlideID].text.answer = jQuery( '#di-as-text-answer' ).val();
 		}
 
-		if( slideObject.imageBoxQuestion !== '' && jQuery( '#canvas' ).attr( 'src' ) !== '' ) {
+		if( slideObject.imageBoxQuestion !== '' && jQuery( '#canvas' ).attr( 'src' ) !== '' && uploadImage === true ) {
+
+			var greyOut = this.greyOutScreen();
+			var env = this;
+
 			var canvas = document.getElementById("canvas");
 			var dataURL = canvas.toDataURL();
 			var blob = dataURItoBlob(dataURL);
@@ -740,11 +761,34 @@ function DIMap( map ) {
 						contentType:false,
 				    processData:false,
 						success: function( data ) {
+							uploadImage = false;
+							env.restoreScreen( greyOut );
 							studentAnswers[currentAssessmentID][currentSlideID].image.answer = data;
 						}
 					});
 		}
 	};
+
+	/**
+	 * Function to grey out the screen while an image is loading.
+	 *
+	 */
+	this.greyOutScreen = function() {
+		var body = document.getElementsByTagName( 'body' )[0];
+		var greyOut = createGeneralElement( 'div', 'grey-out' );
+		var greyOutText = createGeneralElement( 'div', 'grey-out-text', 'Please wait while your image uploads to the server.' );
+		greyOut.appendChild( greyOutText );
+		body.appendChild( greyOut );
+		return greyOut;
+	}
+
+	/**
+	 * Function to restore the screen after the image has loaded.
+	 *
+	 */
+	this.restoreScreen = function( element ) {
+		element.parentNode.removeChild( element );
+	}
 
 	/**
 	 * Function to add KML display layers to the map. Uses the layer options

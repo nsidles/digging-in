@@ -242,7 +242,7 @@ function createSlideElement( slideObject, slideID ) {
 		for( var i in slideObject.multipleChoiceAnswers ) {
 			if( slideObject.multipleChoiceAnswers.hasOwnProperty( i ) ) {
 				answer = createGeneralElement( 'div', 'di-as-answer', slideObject.multipleChoiceAnswers[i].text );
-				if( slideObject.multipleChoiceAnswers[i].correct === true ) {
+				if( slideObject.multipleChoiceAnswers[i].correct === 'true' ) {
 					var correct = createGeneralElement( 'div', 'di-li-correct', ' (correct)' );
 					answer.appendChild( correct );
 				}
@@ -491,7 +491,7 @@ function displaySlideToEdit( slideObject ) {
 			var multipleChoice = createGeneralElement( 'li', '' );
 			var multipleChoiceText = createGeneralElement( 'div', 'di-li-text', slideObject.multipleChoiceAnswers[j].text );
 			multipleChoice.appendChild( multipleChoiceText );
-			if( slideObject.multipleChoiceAnswers[j].correct === true ) {
+			if( slideObject.multipleChoiceAnswers[j].correct === 'true' ) {
 				var multipleChoiceCorrect = createGeneralElement( 'div', 'di-li-correct',  ' (correct)' );
 				multipleChoice.appendChild( multipleChoiceCorrect );
 			}

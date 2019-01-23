@@ -89,9 +89,9 @@ html {
 	text-align: center;
 	vertical-align: center;
 	cursor: pointer;
-    font-size: 24px !important;
-    color: #fff !important;
-    background: none !important;
+  font-size: 24px !important;
+  color: #fff !important;
+  background: none !important;
 }
 
 #di-assessment-reviewer , #di-assessment-returner {
@@ -278,7 +278,9 @@ textarea{
 }
 
 .di-as-question {
-    font-weight: normal;
+    font-weight: bold;
+		font-size: 16px;
+		cursor: pointer;
 }
 .di-as-element{
     font-weight: bold !important;
@@ -468,6 +470,10 @@ p, ul, ol, dl, blockquote, .post-statement, .statement {
     padding: 0 !important;
     margin: 0 auto;
     background: url('http://sidl.es/testbed/wp/wp-content/uploads/2017/12/logo_small.png') no-repeat;
+}
+
+#uploadimage input {
+	width: 100%;
 }
 
 @media screen and (min-width : 1084px) {
@@ -768,9 +774,6 @@ table {
     display: none;
 }
 
-
-
-
 .site-info { display:none }
 
 .entry-meta { display:none }
@@ -798,129 +801,153 @@ footer[role="contentinfo"] {
     display: none;
 }
 
+.grey-out {
+	position: absolute;
+	z-index: 1000000000;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: rgba( 0, 0, 0, 0.5 );
+}
+
+.grey-out-text {
+	display: inline-block;
+	font-size: 24px;
+	line-height: 24px;
+	padding: 10px;
+	border-radius: 5px;
+	background: rgba( 255, 255, 255, 0.8 );
+	text-align: center;
+	position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
 /* responsiveness */
 @media screen and (max-width: 1024px) {
-.download-app-table {
-    display: table;
-}
-}
 
-@media screen and (max-width: 950px) {
-.map-control {
-    float:left;
-    width: 100%;
-    height: 100%;
-    border: 1px solid blue;
-    padding: 10px 0;
-}
-.map {
-    width: 100%;
-}
-#map-control-left{
-    margin-left: 0;
-    width: 48%;
-}
-#map-control-right{
-    width: 48%;
-}
-#filter{
-    width: 100% !important;
-}
-#map-control-right{
-}
+	.download-app-table {
+	    display: table;
+	}
 
-body .site {
-    margin: 0 auto;
-    box-shadow: none !important;
-    max-width: 100rem;
-    padding: 0;
-}
+	.map-control {
+	    float:left;
+	    width: 100%;
+	    height: 100%;
+	    border: 1px solid blue;
+	    padding: 10px 0;
+	}
+	.map {
+	    width: 100%;
+	}
+	#map-control-left{
+	    margin-left: 0;
+	    width: 48%;
+	}
+	#map-control-right{
+	    width: 48%;
+	}
+	#filter{
+	    width: 100% !important;
+	}
+	#map-control-right{
+	}
 
-.site-header {
-    width: 100%;
-    height: 80px;
-    background-color: #354052 !important;
-    padding: 0 !important;
-    margin: 0 auto;
-}
-.menu-toggle {
-    display: none !important;
-}
-#di-assessment-header div {
-    width: 50% !important;
-    margin-left: 20% !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-}
-.di-as-multiple-choice-answer, .di-as-recorded-multiple-choice-answer {
-    width: 90% !important;
-}
-#di-map-canvas {
-    height: 400px !important;
-}
-#di-map {
-    height: fit-content;
-}
-#di-site {
-    width: 100% !important;
-    float: left !important;
-    max-height: none !important;
-    overflow-y: visible;
-    border: none !important;
-    margin-top: 5px !important;
-}
-#di-content, #di-map {
-    width: 100% !important;
-    dipslay: none;
-}
-#label1, #label2, #label3, #label4 {
-    display: inline-block;
-    width: 90%;
-    height: 30px;
-    margin-left: 20px;
-}
-.main-navigation {
-    margin-top: 0;
-    text-align: right;
-}
-.main-slideshow {
-    display: inline;
-}
-.sidebar-slideshow {
-    display: none;
-}
+	body .site {
+	    margin: 0 auto;
+	    box-shadow: none !important;
+	    max-width: 100rem;
+	    padding: 0;
+	}
 
-.main-navigation ul.nav-menu.toggled-on {
-    display: inline-block;
-    margin-top: 15px;
-}
-.main-navigation ul.nav-menu.toggled-on,
-.main-navigation div.nav-menu.toggled-on > ul {
-    text-align: center;
-}
+	.site-header {
+	    width: 100%;
+	    height: 80px;
+	    background-color: #354052 !important;
+	    padding: 0 !important;
+	    margin: 0 auto;
+	}
+	.menu-toggle {
+	    display: none !important;
+	}
+	#di-assessment-header div {
+	    width: 50% !important;
+	    margin-left: 25% !important;
+	    text-overflow: ellipsis !important;
+	    white-space: nowrap !important;
+	    overflow: hidden !important;
+	}
+	.di-as-multiple-choice-answer, .di-as-recorded-multiple-choice-answer {
+	    /* width: 90% !important; */
+	}
+	#di-map-canvas {
+	    height: 400px !important;
+	}
+	#di-map {
+	    height: fit-content;
+	}
+	#di-site {
+	    width: 100% !important;
+	    float: left !important;
+	    max-height: none !important;
+	    overflow-y: visible;
+	    border: none !important;
+	    margin-top: 5px !important;
+	}
+	#di-content, #di-map {
+	    width: 100% !important;
+	    dipslay: none;
+	}
+	#label1, #label2, #label3, #label4 {
+	    display: inline-block;
+	    width: 90%;
+	    height: 30px;
+	    margin-left: 20px;
+	}
+	.main-navigation {
+	    margin-top: 0;
+	    text-align: right;
+	}
+	.main-slideshow {
+	    display: inline;
+	}
+	.sidebar-slideshow {
+	    display: none;
+	}
 
-.footer {
-    text-align: center;
-}
-.footer img {
-    float: none;
-}
-#di-assessment, #di-review {
-    border: 0 !important;
-    border-radius: 4px !important;
-    left: auto! important;
-    top: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 0 !important;
-}
-.di-as-multiple-choice-answer, .di-as-recorded-multiple-choice-answer {
-    margin: 5px !important;
-}
-#di-assessment-body .di-as-element {
-    margin: 20px 0 0 0;
-}
+	.main-navigation ul.nav-menu.toggled-on {
+	    display: inline-block;
+	    margin-top: 15px;
+	}
+	.main-navigation ul.nav-menu.toggled-on,
+	.main-navigation div.nav-menu.toggled-on > ul {
+	    text-align: center;
+	}
+
+	.footer {
+	    text-align: center;
+	}
+	.footer img {
+	    float: none;
+	}
+	#di-assessment, #di-review {
+	    border: 0 !important;
+	    border-radius: 4px !important;
+	    left: auto! important;
+	    top: 0 !important;
+	    width: 100% !important;
+	    height: 100% !important;
+	    border-radius: 0 !important;
+	}
+	.di-as-multiple-choice-answer, .di-as-recorded-multiple-choice-answer {
+	    margin: 5px !important;
+	}
+	#di-assessment-body .di-as-element {
+	    margin: 20px 0 0 0;
+	}
 
 }
 
