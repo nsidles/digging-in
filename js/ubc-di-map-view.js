@@ -5,6 +5,7 @@ var studentAnswers = {};
 var studentAnswersID = '';
 var assessment = {};
 var uploadImage = false;
+var tempAssessmentID;
 
 jQuery( document ).ready(function( $ ) {
 	// Creating variables used in creating the Google Maps element used to retrieve soil sites
@@ -119,7 +120,12 @@ function DIMap( map ) {
 			jQuery( '#di-site .main-left' ).append( tempText );
 			jQuery( '[ id^=di-assessment-starter- ]' ).click(function() {
 				assessmentID = jQuery( this ).attr( 'id' ).replace( 'di-assessment-starter-', '' );
-				objectInstance.retrieveAssessment( assessmentID );
+				if( tempAssessmentID !== assessmentID ) {
+					objectInstance.retrieveAssessment( assessmentID );
+					tempAssessmentID = assessmentID;
+				} else {
+					jQuery( '#di-assessment-background' ).toggle();
+				}
 			});
 		});
 	};
@@ -292,12 +298,15 @@ function DIMap( map ) {
 			answerForm.setAttribute( 'enctype', 'multipart/form-data' );
 			answer.appendChild( answerForm );
 
+			var fileInputContainer = createGeneralElement( 'label', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Click here to upload an image' );
+
 			var fileInput = createGeneralElement( 'input' );
 			fileInput.setAttribute( 'id', 'file' );
 			fileInput.setAttribute( 'type', 'file' );
 			fileInput.setAttribute( 'name', 'file' );
 			fileInput.required = true;
-			answerForm.appendChild( fileInput );
+			fileInputContainer.appendChild( fileInput );
+			answerForm.appendChild( fileInputContainer );
 
 			var canvas = createGeneralElement( 'canvas' );
 			canvas.setAttribute( 'id', 'canvas' );
@@ -317,6 +326,15 @@ function DIMap( map ) {
 		    };
 				imageObj.src = studentAnswers[assessmentID][slideID].image.answer;
 				canvas.setAttribute( 'src', studentAnswers[assessmentID][slideID].image.answer );
+
+				var fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
+
+				fileRemove.addEventListener( 'click', function() {
+					ctx.clearRect(0, 0, 500, 500);
+					studentAnswers[assessmentID][slideID].image.answer = '';
+				});
+
+				answerForm.appendChild( fileRemove );
 			}
 
 			/**
@@ -389,12 +407,48 @@ function DIMap( map ) {
 				});
 		    var isMouseDown=false;
 				var imageObj=new Image();
+				var tempRotate = 90;
 		    imageObj.onload=function(){
+						var env = this;
 						ctx.clearRect(0, 0, 500, 500);
 		        ctx.save();
 		        ctx.globalAlpha= '.9';
-		        ctx.drawImage(this,0,0,canvas.width,canvas.height);
+		        ctx.drawImage(env,0,0,canvas.width,canvas.height);
 		        ctx.restore();
+
+						fileRemove.parentNode.removeChild( fileRemove );
+
+						var fileRestore = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Restore the image' );
+						var fileRotate = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Rotate the image' );
+						var fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
+
+						fileRestore.addEventListener( 'click', function() {
+							ctx.clearRect(0, 0, 500, 500);
+							ctx.save();
+			        ctx.globalAlpha= '.9';
+			        ctx.drawImage(env,0,0,canvas.width,canvas.height);
+			        ctx.restore();
+						});
+
+						fileRotate.addEventListener( 'click', function() {
+							ctx.clearRect(0, 0, 500, 500);
+					    ctx.save();
+							ctx.globalAlpha= '.9';
+					    ctx.translate(250,250);
+					    ctx.rotate(tempRotate*Math.PI/180);
+							tempRotate += 90;
+					    ctx.drawImage(env,-canvas.width/2,-canvas.height/2,500,500);
+					    ctx.restore();
+						});
+
+						fileRemove.addEventListener( 'click', function() {
+							ctx.clearRect(0, 0, 500, 500);
+						});
+
+						answerForm.appendChild( fileRestore );
+						answerForm.appendChild( fileRotate );
+						answerForm.appendChild( fileRemove );
+
 		    };
 		    imageObj.src= e.target.result;
 				jQuery( '#canvas' ).attr( 'src', e.target.result );
@@ -522,7 +576,7 @@ function DIMap( map ) {
 		if( slideObject.final == 'checked' ) {
 			var bodyFinal = createGeneralElement( 'div', [ 'di-as-element', 'di-as-final' ] );
 			if( jQuery( '#di-user-id' ).html() > 0 ) {
-				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-submit' ], 'Review and submit your answers' );
+				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-submit' ], 'Final review of answers' );
 			} else {
 				var bodyFinalButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-no-button' ], 'Log in to be able to submit answers.' );
 			}
@@ -679,7 +733,9 @@ function DIMap( map ) {
 			jQuery( '#di-reviewer-footer' ).html( '' );
 		});
 		jQuery( '#di-assessment-closer' ).on( 'click', function() {
-			jQuery( '#di-assessment-background' ).hide();
+			if( confirm( 'Are you sure you want to close this assessment? Your answers may not be saved.' ) ) {
+				jQuery( '#di-assessment-background' ).hide();
+			}
 		});
 		jQuery( '#di-reviewer-closer' ).on( 'click', function() {
 			jQuery( '#di-review' ).toggle();

@@ -194,7 +194,7 @@ class UBC_DI_View {
 				</div>
 				<div id="di-review">
 					<div id="di-review-header">
-						<h2>Review Answers</h2>
+						<div>Review Answers</div>
 					</div>
 					<div id="di-reviewer-closer">
 						&#10005;
