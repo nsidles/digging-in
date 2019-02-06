@@ -323,18 +323,18 @@ function DIMap( map ) {
 		        ctx.globalAlpha=3;
 		        ctx.drawImage(this,0,0,canvas.width,canvas.height);
 		        ctx.restore();
+						var fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
+
+						fileRemove.addEventListener( 'click', function() {
+							ctx.clearRect(0, 0, 500, 500);
+							studentAnswers[assessmentID][slideID].image.answer = '';
+							uploadImage = false;
+						});
+
+						answerForm.appendChild( fileRemove );
 		    };
 				imageObj.src = studentAnswers[assessmentID][slideID].image.answer;
 				canvas.setAttribute( 'src', studentAnswers[assessmentID][slideID].image.answer );
-
-				var fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
-
-				fileRemove.addEventListener( 'click', function() {
-					ctx.clearRect(0, 0, 500, 500);
-					studentAnswers[assessmentID][slideID].image.answer = '';
-				});
-
-				answerForm.appendChild( fileRemove );
 			}
 
 			/**
@@ -416,11 +416,13 @@ function DIMap( map ) {
 		        ctx.drawImage(env,0,0,canvas.width,canvas.height);
 		        ctx.restore();
 
-						fileRemove.parentNode.removeChild( fileRemove );
+						if( typeof fileRemove !== 'undefined' && typeof fileRemove.parentNode !== 'undefined' ) {
+							fileRemove.parentNode.removeChild( fileRemove );
+						}
 
 						var fileRestore = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Restore the image' );
 						var fileRotate = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Rotate the image' );
-						var fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
+						fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
 
 						fileRestore.addEventListener( 'click', function() {
 							ctx.clearRect(0, 0, 500, 500);
@@ -443,6 +445,7 @@ function DIMap( map ) {
 
 						fileRemove.addEventListener( 'click', function() {
 							ctx.clearRect(0, 0, 500, 500);
+							uploadImage = false;
 						});
 
 						answerForm.appendChild( fileRestore );
@@ -820,6 +823,14 @@ function DIMap( map ) {
 							uploadImage = false;
 							env.restoreScreen( greyOut );
 							studentAnswers[currentAssessmentID][currentSlideID].image.answer = data;
+						},
+						error: function( data ) {
+							uploadImage = false;
+							env.restoreScreen( greyOut );
+							greyOut = env.greyOutScreenFailure();
+							setTimeout( function() {
+								env.restoreScreen( greyOut );
+							}, 2000);
 						}
 					});
 		}
@@ -833,6 +844,19 @@ function DIMap( map ) {
 		var body = document.getElementsByTagName( 'body' )[0];
 		var greyOut = createGeneralElement( 'div', 'grey-out' );
 		var greyOutText = createGeneralElement( 'div', 'grey-out-text', 'Please wait while your image uploads to the server.' );
+		greyOut.appendChild( greyOutText );
+		body.appendChild( greyOut );
+		return greyOut;
+	}
+
+	/**
+	 * Function to grey out the screen while an image load has failed.
+	 *
+	 */
+	this.greyOutScreenFailure = function() {
+		var body = document.getElementsByTagName( 'body' )[0];
+		var greyOut = createGeneralElement( 'div', 'grey-out' );
+		var greyOutText = createGeneralElement( 'div', 'grey-out-text', 'Your upload has failed. Are you logged in?' );
 		greyOut.appendChild( greyOutText );
 		body.appendChild( greyOut );
 		return greyOut;
