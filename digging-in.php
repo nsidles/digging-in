@@ -5,7 +5,7 @@
 	 *
 	 * Description: Digging In is a web tool that allows educators to create educational lessons associated with precise geographic points. Students can answer questions, fill out surveys, upload media, and have their assessments evaluated. This plugin was created for soil scientists, but it can be used for many lessons.
 	 *
-	 * Version: 0.9.1
+	 * Version: 0.9.3
 	 * Author: Nathan Sidles
 	 * Author URI: http://sidl.es/
 	 * LICENSE: GPL2
