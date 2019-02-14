@@ -6,6 +6,8 @@ var studentAnswersID = '';
 var assessment = {};
 var uploadImage = false;
 var tempAssessmentID;
+var fileRemove;
+var fileEditNote;
 
 jQuery( document ).ready(function( $ ) {
 	// Creating variables used in creating the Google Maps element used to retrieve soil sites
@@ -298,7 +300,7 @@ function DIMap( map ) {
 			answerForm.setAttribute( 'enctype', 'multipart/form-data' );
 			answer.appendChild( answerForm );
 
-			var fileInputContainer = createGeneralElement( 'label', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Click here to upload an image' );
+			var fileInputContainer = createGeneralElement( 'label', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Click here to load an image' );
 
 			var fileInput = createGeneralElement( 'input' );
 			fileInput.setAttribute( 'id', 'file' );
@@ -323,14 +325,16 @@ function DIMap( map ) {
 		        ctx.globalAlpha=3;
 		        ctx.drawImage(this,0,0,canvas.width,canvas.height);
 		        ctx.restore();
-						var fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
-
+            fileEditNote = createGeneralElement( 'p', [], 'NOTE: Reload an image to continue editing it.' );
+						fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
+            replaceText({ 'element' : fileInputContainer, 'text' : 'Click here to load a different image' });
 						fileRemove.addEventListener( 'click', function() {
 							ctx.clearRect(0, 0, 500, 500);
 							studentAnswers[assessmentID][slideID].image.answer = '';
 							uploadImage = false;
 						});
 
+            answerForm.appendChild( fileEditNote );
 						answerForm.appendChild( fileRemove );
 		    };
 				imageObj.src = studentAnswers[assessmentID][slideID].image.answer;
@@ -415,12 +419,14 @@ function DIMap( map ) {
 		        ctx.globalAlpha= '.9';
 		        ctx.drawImage(env,0,0,canvas.width,canvas.height);
 		        ctx.restore();
-
 						if( typeof fileRemove !== 'undefined' && typeof fileRemove.parentNode !== 'undefined' ) {
 							fileRemove.parentNode.removeChild( fileRemove );
 						}
+            if( typeof fileEditNote !== 'undefined' && typeof fileEditNote.parentNode !== 'undefined' ) {
+							fileEditNote.parentNode.removeChild( fileEditNote );
+						}
 
-						var fileRestore = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Restore the image' );
+						var fileRestore = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove lines from the image' );
 						var fileRotate = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Rotate the image' );
 						fileRemove = createGeneralElement( 'div', [ 'di-as-file-container', 'di-as-button-slide-link' ], 'Remove the image' );
 
@@ -628,9 +634,11 @@ function DIMap( map ) {
 
 				if( studentAnswers[assessmentID][i].recordedMultipleChoice.question !== '' || studentAnswers[assessmentID][i].text.question !== '' || studentAnswers[assessmentID][i].image.question !== '' ) {
 
-					var header = createGeneralElement( 'h3', 'di-review-title', assessment[i].title + ' (tap to jump to this slide)' );
+					var header = createGeneralElement( 'h2', 'di-review-title', assessment[i].title );
+          var headerButton = createGeneralElement( 'div', [ 'di-as-button', 'di-as-button-inline' ], 'Tap to jump to this slide' );
 					header.setAttribute( 'slide-id', i );
 					body.appendChild( header );
+          header.appendChild( headerButton );
 
 					jQuery( header ).on( 'click', function( e ) {
 						var slide = this.getAttribute( 'slide-id' );
@@ -736,9 +744,7 @@ function DIMap( map ) {
 			jQuery( '#di-reviewer-footer' ).html( '' );
 		});
 		jQuery( '#di-assessment-closer' ).on( 'click', function() {
-			if( confirm( 'Are you sure you want to close this assessment? Your answers may not be saved.' ) ) {
-				jQuery( '#di-assessment-background' ).hide();
-			}
+			jQuery( '#di-assessment-background' ).hide();
 		});
 		jQuery( '#di-reviewer-closer' ).on( 'click', function() {
 			jQuery( '#di-review' ).toggle();
@@ -763,6 +769,12 @@ function DIMap( map ) {
 					jQuery( '#di-assessment-body' ).html( '' );
 					jQuery( '#di-assessment-footer' ).html( '' );
 					jQuery( '#di-assessment-background' ).hide();
+          for( var i in assessment ) {
+    				if( assessment.hasOwnProperty( i ) ) {
+    					objectInstance.displaySlide( i );
+    					break;
+    				}
+    			}
 				});
 		});
 		jQuery( '#di-reviewer-footer' ).on( 'click', '#di-as-button-slide-link-first', function() {
@@ -989,6 +1001,23 @@ function DIMap( map ) {
  		element.appendChild( text );
  	}
  	return element;
+ }
+
+ /**
+  * Function for replacing text in an elemnt.
+  *
+  * @param {Object} element - HTMLElement or NSLViewDOM object in which to replace text.
+  * @param {String} text - Text to add to element.
+  */
+ function replaceText( parameters ) {
+   if ( typeof parameters !== 'undefined' ) {
+     for ( var node in parameters.element.childNodes ) {
+       if ( parameters.element.childNodes[node].nodeType == 3 ) {
+         parameters.element.removeChild( parameters.element.childNodes[node] );
+         parameters.element.appendChild( document.createTextNode( parameters.text ) );
+       }
+     }
+   }
  }
 
 /**
