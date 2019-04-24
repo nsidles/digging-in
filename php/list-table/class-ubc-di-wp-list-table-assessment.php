@@ -137,6 +137,7 @@ class UBC_DI_WP_List_Table_Assessment extends WP_List_Table {
 			$actions = array(
 				'edit'      => sprintf( '<a href="?page=%s&action=%s&assessment=%s">Edit</a>', sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'edit', $item['id'] ),
 				'delete'    => sprintf( '<a href="?page=%s&action=%s&assessment=%s">Delete</a>', sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'delete', $item['id'] ),
+				'copy'    => sprintf( '<a href="?page=%s&action=%s&assessment=%s">Copy</a>', sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ), 'copy', $item['id'] ),
 			);
 			return sprintf( '%1$s %2$s', $item['id'], $this->row_actions( $actions ) );
 		}

@@ -48,8 +48,42 @@ class UBC_DI_Admin_Assessment extends UBC_DI_Admin {
 		if ( isset( $_GET['assessment'] ) && isset( $_GET['action'] ) && sanitize_text_field( wp_unslash( $_GET['action'] ) ) == 'delete' ) {
 			$this->delete_item( intval( $_GET['assessment'] ) );
 		}
+		if ( isset( $_GET['assessment'] ) && isset( $_GET['action'] ) && sanitize_text_field( wp_unslash( $_GET['action'] ) ) == 'copy' ) {
+			$this->copy_item( intval( $_GET['assessment'] ) );
+		}
 		$this->add_new_item();
 		$this->add_list_table();
+	}
+
+	/**
+   *
+   * This function copies an assessment.
+   *
+   * @param object $item
+   *
+   * @access public
+   * @return void
+   */
+	function copy_item( $item ) {
+		$ubc_di_assessment = get_post( intval( $item ) );
+		$ubc_di_assessment_data = get_post_meta( intval( $item ), 'ubc_di_assessment_data', true );
+		$ubc_di_assessment_sites = get_post_meta( intval( $item ), 'ubc_di_assessment_sites', true );
+		$ubc_di_assessment_end_date = get_post_meta( intval( $item ), 'ubc_di_assessment_end_date', true );
+		$ubc_di_assessment_post = array(
+			'post_title' => $ubc_di_assessment->post_title,
+			'post_status' => 'publish',
+			'post_type' => 'ubc_di_assessment',
+		);
+		$ubc_di_assessment_id = wp_insert_post( $ubc_di_assessment_post );
+		if ( isset( $ubc_di_assessment_sites ) ) {
+			add_post_meta( $ubc_di_assessment_id, 'ubc_di_assessment_sites', $ubc_di_assessment_sites );
+		}
+		if ( isset( $ubc_di_assessment_end_date ) ) {
+			add_post_meta( $ubc_di_assessment_id, 'ubc_di_assessment_end_date', $ubc_di_assessment_end_date );
+		}
+		if ( isset( $ubc_di_assessment_data ) ) {
+			add_post_meta( $ubc_di_assessment_id, 'ubc_di_assessment_data', $ubc_di_assessment_data );
+		}
 	}
 
 	/**
